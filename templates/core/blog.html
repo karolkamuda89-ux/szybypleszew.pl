@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Blog – {{ site_name }}{% endblock %}
+{% block description %}Porady o szybach samochodowych i szkleniu – blog {{ site_name }}.{% endblock %}
+{% block body_class %}page-blog{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+    <div class="container">
+        <span class="eyebrow">Blog</span>
+        <h1>Porady i aktualności</h1>
+        <p class="lead">Podpowiadamy, jak dbać o szyby, kiedy naprawić odprysk, a kiedy wymienić szybę.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="posts">
+            <article class="post-card">
+                <div class="post-thumb" aria-hidden="true"></div>
+                <div class="post-body">
+                    <time datetime="2026-10-01">1 października 2026</time>
+                    <h2>Odprysk na szybie – naprawić czy wymienić?</h2>
+                    <p>Wyjaśniamy, kiedy wystarczy szybka naprawa żywicą, a kiedy wymiana szyby jest konieczna.</p>
+                    <span class="post-more">Wkrótce</span>
+                </div>
+            </article>
+            <article class="post-card">
+                <div class="post-thumb" aria-hidden="true"></div>
+                <div class="post-body">
+                    <time datetime="2026-09-15">15 września 2026</time>
+                    <h2>Jak przygotować szyby auta na zimę</h2>
+                    <p>Kilka prostych nawyków, które chronią szybę przed pęknięciem przy mrozie.</p>
+                    <span class="post-more">Wkrótce</span>
+                </div>
+            </article>
+            <article class="post-card">
+                <div class="post-thumb" aria-hidden="true"></div>
+                <div class="post-body">
+                    <time datetime="2026-09-01">1 września 2026</time>
+                    <h2>Wymiana szyby z OC sprawcy – krok po kroku</h2>
+                    <p>Co zrobić po szkodzie i jak wygląda rozliczenie z ubezpieczycielem.</p>
+                    <span class="post-more">Wkrótce</span>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,6 +1,171 @@
 {% extends 'base.html' %}
 
+{% block body_class %}page-home{% endblock %}
+
 {% block content %}
-<h1>szybypleszew.pl</h1>
-<p>Strona w budowie.</p>
+<!-- HERO -->
+<section class="hero">
+    <div class="container hero-inner">
+        <div class="hero-text">
+            <span class="eyebrow">Pleszew i okolice</span>
+            <h1>Wymiana i naprawa szyb <span class="text-accent">od ręki</span></h1>
+            <p class="lead">Szyby samochodowe, naprawa odprysków i szklenie na wymiar. Dobieramy szybę, umawiamy termin i robimy to porządnie – często jeszcze tego samego dnia.</p>
+            <div class="hero-actions">
+                <a href="{{ site_phone_href }}" class="btn btn-cta btn-lg">Zadzwoń: {{ site_phone }}</a>
+                <a href="#oferta" class="btn btn-ghost btn-lg">Zobacz ofertę</a>
+            </div>
+            <ul class="hero-stats">
+                <li><strong>15+</strong><span>lat doświadczenia</span></li>
+                <li><strong>3000+</strong><span>wymienionych szyb</span></li>
+                <li><strong>24h</strong><span>typowy czas realizacji</span></li>
+            </ul>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+            <div class="glass glass-1"></div>
+            <div class="glass glass-2"></div>
+            <div class="glass glass-3"></div>
+        </div>
+    </div>
+</section>
+
+<!-- OFERTA -->
+<section class="section" id="oferta">
+    <div class="container">
+        <div class="section-head">
+            <span class="eyebrow">Oferta</span>
+            <h2>Czym się zajmujemy</h2>
+            <p>Kompleksowa obsługa – od doboru szyby po montaż i kalibrację.</p>
+        </div>
+        <div class="cards">
+            <article class="card">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11m-14 0h14m-14 0v6h14v-6M7 15h.01M17 15h.01"/></svg>
+                </div>
+                <h3>Szyby samochodowe</h3>
+                <p>Wymiana szyb czołowych, bocznych i tylnych do aut osobowych, dostawczych i maszyn.</p>
+            </article>
+            <article class="card">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 15.6 7.1 18.2l.9-5.5-4-3.9 5.5-.8z"/></svg>
+                </div>
+                <h3>Naprawa odprysków</h3>
+                <p>Szybka naprawa odprysków żywicą – bez wymiany szyby i bez długiego czekania.</p>
+            </article>
+            <article class="card">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM12 4v16M4 12h16"/></svg>
+                </div>
+                <h3>Szklenie na wymiar</h3>
+                <p>Szyby do okien, drzwi, witryn i mebli. Docinamy szkło dokładnie na wymiar.</p>
+            </article>
+            <article class="card">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M5 8h14M7 21h10"/></svg>
+                </div>
+                <h3>Likwidacja szkód z OC/AC</h3>
+                <p>Pomagamy w rozliczeniu z ubezpieczycielem – formalności bierzemy na siebie.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- O NAS -->
+<section class="section section-tint" id="o-nas">
+    <div class="container split">
+        <div class="split-media" aria-hidden="true">
+            <div class="media-frame">
+                <div class="media-badge">
+                    <strong>15+</strong>
+                    <span>lat na rynku</span>
+                </div>
+            </div>
+        </div>
+        <div class="split-text">
+            <span class="eyebrow">O nas</span>
+            <h2>Lokalny zakład z doświadczeniem</h2>
+            <p>Jesteśmy rodzinną firmą z Pleszewa. Od lat wymieniamy i naprawiamy szyby – w samochodach, domach i firmach. Stawiamy na rzetelne doradztwo, sprawdzone materiały i terminowość.</p>
+            <ul class="checklist">
+                <li>Szyby od sprawdzonych producentów</li>
+                <li>Gwarancja na montaż i materiały</li>
+                <li>Uczciwa wycena przed rozpoczęciem pracy</li>
+                <li>Możliwość dojazdu do klienta</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- GALERIA -->
+<section class="section" id="galeria">
+    <div class="container">
+        <div class="section-head">
+            <span class="eyebrow">Galeria</span>
+            <h2>Nasze realizacje</h2>
+            <p>Kilka przykładów naszej pracy.</p>
+        </div>
+        <div class="gallery">
+            <figure class="gallery-item gallery-item-wide"><div class="gallery-ph"></div><figcaption>Wymiana szyby czołowej</figcaption></figure>
+            <figure class="gallery-item"><div class="gallery-ph"></div><figcaption>Naprawa odprysku</figcaption></figure>
+            <figure class="gallery-item"><div class="gallery-ph"></div><figcaption>Witryna sklepowa</figcaption></figure>
+            <figure class="gallery-item"><div class="gallery-ph"></div><figcaption>Szyba boczna</figcaption></figure>
+            <figure class="gallery-item gallery-item-wide"><div class="gallery-ph"></div><figcaption>Szklenie drzwi</figcaption></figure>
+        </div>
+    </div>
+</section>
+
+<!-- KONTAKT -->
+<section class="section section-dark" id="kontakt">
+    <div class="container contact">
+        <div class="contact-text">
+            <span class="eyebrow">Kontakt</span>
+            <h2>Umów wymianę lub wycenę</h2>
+            <p>Najszybciej załatwisz to telefonicznie – powiedz nam, jakie to auto lub jaki wymiar szyby, a podamy cenę i termin.</p>
+            <a href="{{ site_phone_href }}" class="btn btn-cta btn-lg">Zadzwoń: {{ site_phone }}</a>
+        </div>
+        <ul class="contact-list">
+            <li>
+                <span class="contact-label">Telefon</span>
+                <a href="{{ site_phone_href }}">{{ site_phone }}</a>
+            </li>
+            <li>
+                <span class="contact-label">E-mail</span>
+                <a href="mailto:{{ site_email }}">{{ site_email }}</a>
+            </li>
+            <li>
+                <span class="contact-label">Adres</span>
+                <span>{{ site_address }}</span>
+            </li>
+            <li>
+                <span class="contact-label">Godziny otwarcia</span>
+                <span>{{ site_opening_hours }}</span>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<!-- OPINIE -->
+<section class="section section-tint" id="opinie">
+    <div class="container">
+        <div class="section-head">
+            <span class="eyebrow">Opinie</span>
+            <h2>Co mówią klienci</h2>
+        </div>
+        <div class="reviews">
+            <blockquote class="review">
+                <div class="stars" aria-label="5 na 5 gwiazdek">★★★★★</div>
+                <p>Szyba wymieniona tego samego dnia, wszystko czysto i bez problemów z ubezpieczeniem. Polecam!</p>
+                <footer>— Anna, Pleszew</footer>
+            </blockquote>
+            <blockquote class="review">
+                <div class="stars" aria-label="5 na 5 gwiazdek">★★★★★</div>
+                <p>Odprysk naprawiony w pół godziny, nawet nie zdążyłem wypić kawy. Uczciwa cena.</p>
+                <footer>— Marek, Kalisz</footer>
+            </blockquote>
+            <blockquote class="review">
+                <div class="stars" aria-label="5 na 5 gwiazdek">★★★★★</div>
+                <p>Zamawialiśmy szyby do witryny sklepu. Dokładny pomiar i szybki montaż.</p>
+                <footer>— Kasia, Jarocin</footer>
+            </blockquote>
+        </div>
+    </div>
+</section>
 {% endblock %}

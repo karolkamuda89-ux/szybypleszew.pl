@@ -63,6 +63,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.context_processors.site_info',
             ],
         },
     },
@@ -122,3 +123,10 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# Dane firmy wyswietlane w szablonach (header, kontakt, stopka)
+SITE_NAME = 'Szyby Pleszew'
+SITE_PHONE = '+48 600 000 000'
+SITE_EMAIL = 'kontakt@szybypleszew.pl'
+SITE_ADDRESS = 'ul. Przykładowa 1, 63-300 Pleszew'
+SITE_OPENING_HOURS = 'Pon–Pt 8:00–17:00, Sob 8:00–13:00'
