@@ -36,7 +36,7 @@
             <h2>Czym się zajmujemy</h2>
             <p>Sprzedajemy i montujemy szyby do każdego rodzaju pojazdu – od ciągnika po autobus.</p>
         </div>
-        <div class="cards cards-3">
+        <div class="cards">
             <article class="card">
                 <div class="card-icon">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11m-14 0h14m-14 0v6h14v-6M7 15h.01M17 15h.01"/></svg>
@@ -56,7 +56,7 @@
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 15.6 7.1 18.2l.9-5.5-4-3.9 5.5-.8z"/></svg>
                 </div>
                 <h3>Naprawa odprysków</h3>
-                <p>Mały odprysk naprawimy bez wymiany całej szyby – szybciej i taniej.</p>
+                <p>Odprysk po uderzeniu kamienia naprawimy bez wymiany szyby – z bezterminową gwarancją, że nie zamieni się w pęknięcie.</p>
             </article>
             <article class="card">
                 <div class="card-icon">
@@ -74,10 +74,24 @@
             </article>
             <article class="card">
                 <div class="card-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18L18 6M18 6l1.5-1.5M7 15l2 2M10 12l2 2M13 9l2 2"/></svg>
+                </div>
+                <h3>Pióra wycieraczek VISEE</h3>
+                <p>Sprzedajemy polskie pióra wycieraczek VISEE i od razu montujemy je w Twoim aucie.</p>
+            </article>
+            <article class="card">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h8l-1 5H9zM9 8h6v3a3 3 0 0 1-6 0zM12 14v7"/></svg>
+                </div>
+                <h3>Kleje SIKA</h3>
+                <p>Szyby wklejamy klejami SIKA najwyższej jakości – tymi samymi, których używa się w fabrykach.</p>
+            </article>
+            <article class="card">
+                <div class="card-icon">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6zM9 12l2 2 4-4"/></svg>
                 </div>
-                <h3>Gwarancja i kleje SIKA</h3>
-                <p>Do montażu używamy klejów SIKA najwyższej jakości. Na sprzedane i zamontowane szyby dajemy gwarancję.</p>
+                <h3>Gwarancja</h3>
+                <p>Na szyby sprzedane i zamontowane przez nas udzielamy gwarancji.</p>
             </article>
         </div>
 
@@ -96,8 +110,31 @@
     </div>
 </section>
 
+<!-- PIORA WYCIERACZEK VISEE -->
+<section class="section section-tint" id="wycieraczki">
+    <div class="container split">
+        <div class="split-text">
+            <span class="eyebrow">Nowość · pióra wycieraczek</span>
+            <h2>Pióra wycieraczek VISEE z montażem od ręki</h2>
+            <p>Nawiązaliśmy współpracę z VISEE – polskim producentem piór wycieraczek. Dobierzemy pióra do Twojego auta i od razu je zamontujemy, także przy okazji wymiany szyby.</p>
+            <ul class="checklist">
+                <li>Polska produkcja</li>
+                <li>Dobór do konkretnego modelu auta</li>
+                <li>Montaż na miejscu – odjeżdżasz z nowymi wycieraczkami</li>
+            </ul>
+            <a href="{{ site_phone_href }}" class="btn btn-cta btn-lg">Zapytaj o pióra: {{ site_phone }}</a>
+        </div>
+        <div class="split-media">
+            {# TODO: podmienic na zdjecie od klienta: static/img/visee.jpg #}
+            <div class="visee-photo" aria-hidden="true">
+                <span>VISEE</span>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- O NAS -->
-<section class="section section-tint" id="o-nas">
+<section class="section" id="o-nas">
     <div class="container split">
         <div class="split-media" aria-hidden="true">
             <div class="media-frame">
@@ -114,6 +151,7 @@
             <p>Na co dzień współpracujemy z dużymi serwisami samochodowymi, firmami transportowymi i komisami – a także z klientami indywidualnymi.</p>
             <ul class="checklist">
                 <li>Gwarancja na szyby sprzedawane i montowane przez nas</li>
+                <li>Bezterminowa gwarancja na pęknięcie po naprawie odprysku</li>
                 <li>Szyby producentów z pierwszego montażu fabrycznego</li>
                 <li>Kleje montażowe SIKA najwyższej jakości</li>
                 <li>Dojazd do klienta w całej Wielkopolsce</li>
@@ -123,7 +161,7 @@
 </section>
 
 <!-- GALERIA -->
-<section class="section" id="galeria">
+<section class="section section-tint" id="galeria">
     <div class="container">
         <div class="section-head">
             <span class="eyebrow">Galeria</span>
@@ -157,6 +195,7 @@
             <li>
                 <span class="contact-label">E-mail</span>
                 <a href="mailto:{{ site_email }}">{{ site_email }}</a>
+                <span class="contact-alt">zapasowy: <a href="mailto:{{ site_email_alt }}">{{ site_email_alt }}</a></span>
             </li>
             <li>
                 <span class="contact-label">Adres</span>
@@ -170,31 +209,45 @@
     </div>
 </section>
 
-<!-- OPINIE -->
-<!-- UWAGA: ponizsze opinie sa PRZYKLADOWE – przed publikacja zastapic prawdziwymi (np. z Google). -->
-<section class="section section-tint" id="opinie">
+<!-- OPINIE (z wizytowki Google) -->
+<section class="section" id="opinie">
     <div class="container">
         <div class="section-head">
             <span class="eyebrow">Opinie</span>
             <h2>Co mówią klienci</h2>
         </div>
-        <div class="reviews">
-            <blockquote class="review">
-                <div class="stars" aria-label="5 na 5 gwiazdek">★★★★★</div>
-                <p>Szyba wymieniona tego samego dnia, wszystko czysto i bez problemów. Polecam!</p>
-                <footer>— Anna, Pleszew</footer>
-            </blockquote>
-            <blockquote class="review">
-                <div class="stars" aria-label="5 na 5 gwiazdek">★★★★★</div>
-                <p>Przyjechali do nas na plac i wymienili szybę w ciężarówce. Szybko i solidnie.</p>
-                <footer>— Marek, Kalisz</footer>
-            </blockquote>
-            <blockquote class="review">
-                <div class="stars" aria-label="5 na 5 gwiazdek">★★★★★</div>
-                <p>Odprysk naprawiony od ręki, bez wymiany szyby. Uczciwa cena.</p>
-                <footer>— Kasia, Jarocin</footer>
-            </blockquote>
+
+        <div class="rating-summary">
+            <div class="rating-score">
+                <strong>{{ google.rating|floatformat:1 }}</strong>
+                <div>
+                    <div class="stars stars-lg" aria-label="Ocena {{ google.rating|floatformat:1 }} na 5">{% for i in "12345" %}<span class="{% if forloop.counter <= google.stars_full %}on{% endif %}">★</span>{% endfor %}</div>
+                    <span class="rating-count">{{ google.count }} opinii w Google</span>
+                </div>
+            </div>
+            <div class="rating-actions">
+                <a href="{{ google.url }}" class="btn btn-ghost" target="_blank" rel="noopener">Zobacz wszystkie opinie</a>
+                <a href="{{ google.write_url }}" class="btn btn-cta" target="_blank" rel="noopener">Wystaw opinię</a>
+            </div>
         </div>
+
+        {% if google.reviews %}
+        <div class="reviews">
+            {% for review in google.reviews %}
+            <blockquote class="review">
+                <div class="stars" aria-label="{{ review.rating }} na 5 gwiazdek">{% for i in "12345" %}<span class="{% if forloop.counter <= review.rating %}on{% endif %}">★</span>{% endfor %}</div>
+                <p>{{ review.text|truncatewords:45 }}</p>
+                <footer>
+                    {% if review.author_photo %}<img src="{{ review.author_photo }}" alt="" width="32" height="32" loading="lazy" referrerpolicy="no-referrer">{% endif %}
+                    <span>
+                        {% if review.author_url %}<a href="{{ review.author_url }}" target="_blank" rel="noopener">{{ review.author }}</a>{% else %}{{ review.author }}{% endif %}
+                        <small>{{ review.when }} · Google</small>
+                    </span>
+                </footer>
+            </blockquote>
+            {% endfor %}
+        </div>
+        {% endif %}
     </div>
 </section>
 {% endblock %}

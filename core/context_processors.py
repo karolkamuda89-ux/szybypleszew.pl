@@ -18,6 +18,7 @@ def site_info(request):
         'site_phone_e164': digits,
         'site_phone_href': 'tel:' + digits,
         'site_email': settings.SITE_EMAIL,
+        'site_email_alt': settings.SITE_EMAIL_ALT,
         'site_street': settings.SITE_STREET,
         'site_postcode': settings.SITE_POSTCODE,
         'site_city': settings.SITE_CITY,

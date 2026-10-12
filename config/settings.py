@@ -127,12 +127,22 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Dane firmy wyswietlane w szablonach (header, kontakt, stopka, dane strukturalne)
 SITE_NAME = 'Auto Szyby Pleszew'
 SITE_COMPANY = 'P.H.U. AUTO MAKSYM Joanna Płukarz'
-SITE_NIP = '617-110-22-71'
+SITE_NIP = '617 110 227 1'
 SITE_FOUNDED = 2001
 SITE_PHONE = '607 560 682'
-SITE_EMAIL = 'autoszybypleszew@interia.pl'
+SITE_EMAIL = 'szybypleszew@interia.pl'
+SITE_EMAIL_ALT = 'autoszybypleszew@interia.pl'
 SITE_STREET = 'ul. Podgórna 21'
 SITE_POSTCODE = '63-300'
 SITE_CITY = 'Pleszew'
 SITE_HOURS_WEEKDAYS = 'pon.–pt. 8:00–17:00'
 SITE_HOURS_SATURDAY = 'sob. 8:00–14:00'
+
+# Opinie Google (wizytowka "AUTO SZYBY PLESZEW NAJTANIEJ").
+# Bez klucza API strona pokazuje tylko ocene z wartosci zapasowych i link do opinii.
+GOOGLE_PLACES_API_KEY = os.environ.get('GOOGLE_PLACES_API_KEY', '')
+GOOGLE_PLACE_ID = os.environ.get('GOOGLE_PLACE_ID', '')
+GOOGLE_REVIEWS_URL = 'https://maps.app.goo.gl/vNggiK4uxwEbUxC67'
+GOOGLE_RATING_FALLBACK = 4.8
+GOOGLE_RATING_COUNT_FALLBACK = 250
+GOOGLE_REVIEWS_CACHE_SECONDS = 12 * 60 * 60
