@@ -277,6 +277,7 @@ img { max-width: 100%; display: block; }
     color: var(--lime-400);
 }
 .hero-stats span { font-size: .9rem; color: var(--graphite-400); }
+.footer-bottom p { line-height: 1.5; }
 
 /* dekoracyjne "tafle szkła" */
 .hero-visual {
@@ -365,6 +366,43 @@ img { max-width: 100%; display: block; }
     stroke-width: 1.8;
     stroke-linecap: round;
     stroke-linejoin: round;
+}
+
+.cards-3 { grid-template-columns: repeat(3, 1fr); }
+
+/* Producenci szyb */
+.brands {
+    margin-top: 56px;
+    padding: 28px 32px;
+    border-radius: var(--radius-lg);
+    background: var(--graphite-900);
+    text-align: center;
+}
+.brands-title {
+    color: var(--graphite-300);
+    font-size: .95rem;
+    margin: 0 0 18px;
+}
+.brands-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px 12px;
+}
+.brands-list li {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: .9rem;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(168, 240, 0, .35);
+    background: rgba(168, 240, 0, .06);
 }
 
 /* O nas */
@@ -594,7 +632,7 @@ img { max-width: 100%; display: block; }
 }
 .footer-inner {
     display: grid;
-    grid-template-columns: 1.4fr 1fr 1fr;
+    grid-template-columns: 1.3fr 1fr 1fr .8fr;
     gap: 40px;
     padding-bottom: 40px;
 }
@@ -635,7 +673,8 @@ img { max-width: 100%; display: block; }
 @media (max-width: 1120px) {
     .main-nav { gap: 14px; }
     .main-nav ul a { padding: 8px 8px; }
-    .cards { grid-template-columns: repeat(2, 1fr); }
+    .cards,
+    .cards-3 { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 960px) {
@@ -684,8 +723,11 @@ img { max-width: 100%; display: block; }
     .logo img { height: 52px; }
     .section { padding: 64px 0; }
     .cards,
+    .cards-3,
     .reviews,
     .posts { grid-template-columns: 1fr; }
+    .brands { padding: 22px 16px; }
+    .footer-inner { grid-template-columns: 1fr; }
     .gallery { grid-template-columns: 1fr 1fr; grid-auto-rows: 160px; }
     .hero-actions .btn { width: 100%; }
     .hero-stats { gap: 22px; }

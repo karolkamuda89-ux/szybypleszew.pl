@@ -7,17 +7,17 @@
 <section class="hero">
     <div class="container hero-inner">
         <div class="hero-text">
-            <span class="eyebrow">Pleszew i okolice</span>
-            <h1>Wymiana i naprawa szyb <span class="text-accent">od ręki</span></h1>
-            <p class="lead">Szyby samochodowe, naprawa odprysków i szklenie na wymiar. Dobieramy szybę, umawiamy termin i robimy to porządnie – często jeszcze tego samego dnia.</p>
+            <span class="eyebrow">Pleszew · od {{ site_founded }} roku</span>
+            <h1>Sprzedaż i montaż <span class="text-accent">szyb samochodowych</span></h1>
+            <p class="lead">Pierwsza i najdłużej działająca firma z szybami samochodowymi w Pleszewie. Montujemy szyby w autach osobowych, dostawczych, ciężarowych i autobusach – także z dojazdem do klienta w całej Wielkopolsce.</p>
             <div class="hero-actions">
                 <a href="{{ site_phone_href }}" class="btn btn-cta btn-lg">Zadzwoń: {{ site_phone }}</a>
                 <a href="#oferta" class="btn btn-ghost btn-lg">Zobacz ofertę</a>
             </div>
             <ul class="hero-stats">
-                <li><strong>15+</strong><span>lat doświadczenia</span></li>
-                <li><strong>3000+</strong><span>wymienionych szyb</span></li>
-                <li><strong>24h</strong><span>typowy czas realizacji</span></li>
+                <li><strong>{{ site_years }} lat</strong><span>na rynku</span></li>
+                <li><strong>tysiące</strong><span>wykonanych montaży</span></li>
+                <li><strong>Wielkopolska</strong><span>dojazd do klienta</span></li>
             </ul>
         </div>
         <div class="hero-visual" aria-hidden="true">
@@ -34,37 +34,64 @@
         <div class="section-head">
             <span class="eyebrow">Oferta</span>
             <h2>Czym się zajmujemy</h2>
-            <p>Kompleksowa obsługa – od doboru szyby po montaż i kalibrację.</p>
+            <p>Sprzedajemy i montujemy szyby do każdego rodzaju pojazdu – od ciągnika po autobus.</p>
         </div>
-        <div class="cards">
+        <div class="cards cards-3">
             <article class="card">
                 <div class="card-icon">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 11l1.5-4.5A2 2 0 0 1 8.4 5h7.2a2 2 0 0 1 1.9 1.5L19 11m-14 0h14m-14 0v6h14v-6M7 15h.01M17 15h.01"/></svg>
                 </div>
-                <h3>Szyby samochodowe</h3>
-                <p>Wymiana szyb czołowych, bocznych i tylnych do aut osobowych, dostawczych i maszyn.</p>
+                <h3>Szyby do każdego pojazdu</h3>
+                <p>Montujemy szyby w autach osobowych, dostawczych, ciężarowych, autobusach i ciągnikach.</p>
+            </article>
+            <article class="card">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg>
+                </div>
+                <h3>Montaż z dojazdem</h3>
+                <p>Nie musisz do nas jechać – wymienimy szybę u Ciebie, w całej Wielkopolsce.</p>
             </article>
             <article class="card">
                 <div class="card-icon">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 15.6 7.1 18.2l.9-5.5-4-3.9 5.5-.8z"/></svg>
                 </div>
                 <h3>Naprawa odprysków</h3>
-                <p>Szybka naprawa odprysków żywicą – bez wymiany szyby i bez długiego czekania.</p>
+                <p>Mały odprysk naprawimy bez wymiany całej szyby – szybciej i taniej.</p>
             </article>
             <article class="card">
                 <div class="card-icon">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM12 4v16M4 12h16"/></svg>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h13l5 5v5H3zM3 12h18M8 7v5M13 7v5M6 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/></svg>
                 </div>
-                <h3>Szklenie na wymiar</h3>
-                <p>Szyby do okien, drzwi, witryn i mebli. Docinamy szkło dokładnie na wymiar.</p>
+                <h3>Przeszklenia busów</h3>
+                <p>Wstawiamy dodatkowe szyby w busach i dostawczakach, łącznie z wycięciem otworu w karoserii.</p>
             </article>
             <article class="card">
                 <div class="card-icon">
-                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M5 8h14M7 21h10"/></svg>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg>
                 </div>
-                <h3>Likwidacja szkód z OC/AC</h3>
-                <p>Pomagamy w rozliczeniu z ubezpieczycielem – formalności bierzemy na siebie.</p>
+                <h3>Poprawa źle zamontowanych szyb</h3>
+                <p>Szyba piszczy, przecieka albo krzywo siedzi? Poprawimy montaż wykonany gdzie indziej.</p>
             </article>
+            <article class="card">
+                <div class="card-icon">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6zM9 12l2 2 4-4"/></svg>
+                </div>
+                <h3>Gwarancja i kleje SIKA</h3>
+                <p>Do montażu używamy klejów SIKA najwyższej jakości. Na sprzedane i zamontowane szyby dajemy gwarancję.</p>
+            </article>
+        </div>
+
+        <div class="brands">
+            <p class="brands-title">Szyby renomowanych producentów – tych samych, które trafiają do aut w fabryce</p>
+            <ul class="brands-list">
+                <li>Saint-Gobain Sekurit</li>
+                <li>Pilkington</li>
+                <li>AGC Automotive</li>
+                <li>Guardian</li>
+                <li>NordGlass</li>
+                <li>Splintex</li>
+                <li>Benson</li>
+            </ul>
         </div>
     </div>
 </section>
@@ -75,20 +102,21 @@
         <div class="split-media" aria-hidden="true">
             <div class="media-frame">
                 <div class="media-badge">
-                    <strong>15+</strong>
-                    <span>lat na rynku</span>
+                    <strong>od {{ site_founded }}</strong>
+                    <span>w Pleszewie</span>
                 </div>
             </div>
         </div>
         <div class="split-text">
             <span class="eyebrow">O nas</span>
-            <h2>Lokalny zakład z doświadczeniem</h2>
-            <p>Jesteśmy rodzinną firmą z Pleszewa. Od lat wymieniamy i naprawiamy szyby – w samochodach, domach i firmach. Stawiamy na rzetelne doradztwo, sprawdzone materiały i terminowość.</p>
+            <h2>Pierwsza firma z szybami samochodowymi w Pleszewie</h2>
+            <p>Działamy od {{ site_founded }} roku i jesteśmy najdłużej działającą firmą z szybami samochodowymi w Pleszewie. Wykonane montaże liczymy już w tysiącach, więc profesjonalna wymiana szyby nie stanowi dla nas żadnego problemu.</p>
+            <p>Na co dzień współpracujemy z dużymi serwisami samochodowymi, firmami transportowymi i komisami – a także z klientami indywidualnymi.</p>
             <ul class="checklist">
-                <li>Szyby od sprawdzonych producentów</li>
-                <li>Gwarancja na montaż i materiały</li>
-                <li>Uczciwa wycena przed rozpoczęciem pracy</li>
-                <li>Możliwość dojazdu do klienta</li>
+                <li>Gwarancja na szyby sprzedawane i montowane przez nas</li>
+                <li>Szyby producentów z pierwszego montażu fabrycznego</li>
+                <li>Kleje montażowe SIKA najwyższej jakości</li>
+                <li>Dojazd do klienta w całej Wielkopolsce</li>
             </ul>
         </div>
     </div>
@@ -105,9 +133,9 @@
         <div class="gallery">
             <figure class="gallery-item gallery-item-wide"><div class="gallery-ph"></div><figcaption>Wymiana szyby czołowej</figcaption></figure>
             <figure class="gallery-item"><div class="gallery-ph"></div><figcaption>Naprawa odprysku</figcaption></figure>
-            <figure class="gallery-item"><div class="gallery-ph"></div><figcaption>Witryna sklepowa</figcaption></figure>
-            <figure class="gallery-item"><div class="gallery-ph"></div><figcaption>Szyba boczna</figcaption></figure>
-            <figure class="gallery-item gallery-item-wide"><div class="gallery-ph"></div><figcaption>Szklenie drzwi</figcaption></figure>
+            <figure class="gallery-item"><div class="gallery-ph"></div><figcaption>Przeszklenie busa</figcaption></figure>
+            <figure class="gallery-item"><div class="gallery-ph"></div><figcaption>Auto dostawcze</figcaption></figure>
+            <figure class="gallery-item gallery-item-wide"><div class="gallery-ph"></div><figcaption>Szyba w ciężarówce</figcaption></figure>
         </div>
     </div>
 </section>
@@ -117,8 +145,8 @@
     <div class="container contact">
         <div class="contact-text">
             <span class="eyebrow">Kontakt</span>
-            <h2>Umów wymianę lub wycenę</h2>
-            <p>Najszybciej załatwisz to telefonicznie – powiedz nam, jakie to auto lub jaki wymiar szyby, a podamy cenę i termin.</p>
+            <h2>Umów montaż lub zapytaj o cenę</h2>
+            <p>Najszybciej załatwisz to telefonicznie – podaj markę, model i rocznik auta, a podamy cenę szyby z montażem i termin. Możemy przyjechać do Ciebie albo zapraszamy do nas na ul. Podgórną w Pleszewie.</p>
             <a href="{{ site_phone_href }}" class="btn btn-cta btn-lg">Zadzwoń: {{ site_phone }}</a>
         </div>
         <ul class="contact-list">
@@ -132,17 +160,18 @@
             </li>
             <li>
                 <span class="contact-label">Adres</span>
-                <span>{{ site_address }}</span>
+                <a href="https://www.google.com/maps/search/?api=1&amp;query={{ site_street|urlencode }}%2C%20{{ site_postcode }}%20{{ site_city|urlencode }}" target="_blank" rel="noopener">{{ site_address }}</a>
             </li>
             <li>
                 <span class="contact-label">Godziny otwarcia</span>
-                <span>{{ site_opening_hours }}</span>
+                <span>{{ site_hours_weekdays }}<br>{{ site_hours_saturday }}</span>
             </li>
         </ul>
     </div>
 </section>
 
 <!-- OPINIE -->
+<!-- UWAGA: ponizsze opinie sa PRZYKLADOWE – przed publikacja zastapic prawdziwymi (np. z Google). -->
 <section class="section section-tint" id="opinie">
     <div class="container">
         <div class="section-head">
@@ -152,17 +181,17 @@
         <div class="reviews">
             <blockquote class="review">
                 <div class="stars" aria-label="5 na 5 gwiazdek">★★★★★</div>
-                <p>Szyba wymieniona tego samego dnia, wszystko czysto i bez problemów z ubezpieczeniem. Polecam!</p>
+                <p>Szyba wymieniona tego samego dnia, wszystko czysto i bez problemów. Polecam!</p>
                 <footer>— Anna, Pleszew</footer>
             </blockquote>
             <blockquote class="review">
                 <div class="stars" aria-label="5 na 5 gwiazdek">★★★★★</div>
-                <p>Odprysk naprawiony w pół godziny, nawet nie zdążyłem wypić kawy. Uczciwa cena.</p>
+                <p>Przyjechali do nas na plac i wymienili szybę w ciężarówce. Szybko i solidnie.</p>
                 <footer>— Marek, Kalisz</footer>
             </blockquote>
             <blockquote class="review">
                 <div class="stars" aria-label="5 na 5 gwiazdek">★★★★★</div>
-                <p>Zamawialiśmy szyby do witryny sklepu. Dokładny pomiar i szybki montaż.</p>
+                <p>Odprysk naprawiony od ręki, bez wymiany szyby. Uczciwa cena.</p>
                 <footer>— Kasia, Jarocin</footer>
             </blockquote>
         </div>

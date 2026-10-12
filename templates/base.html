@@ -4,12 +4,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ site_name }} – wymiana i naprawa szyb{% endblock %}</title>
-    <meta name="description" content="{% block description %}{{ site_name }} – mobilny serwis szyb samochodowych. Wymiana i naprawa szyb w Pleszewie i okolicach.{% endblock %}">
+    <title>{% block title %}{{ site_name }} – sprzedaż i montaż szyb samochodowych{% endblock %}</title>
+    <meta name="description" content="{% block description %}{{ site_name }} – sprzedaż i montaż szyb samochodowych od {{ site_founded }} roku. Szyby do aut osobowych, dostawczych i ciężarowych, naprawa odprysków, dojazd do klienta w całej Wielkopolsce.{% endblock %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,800;1,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block structured_data %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "AutoRepair",
+        "name": "{{ site_name }}",
+        "legalName": "{{ site_company }}",
+        "description": "Sprzedaż i montaż szyb samochodowych, naprawa odprysków, dojazd do klienta w całej Wielkopolsce.",
+        "url": "{{ request.scheme }}://{{ request.get_host }}/",
+        "logo": "{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo/logo-autoszyby.svg' %}",
+        "telephone": "{{ site_phone_e164 }}",
+        "email": "{{ site_email }}",
+        "foundingDate": "{{ site_founded }}",
+        "taxID": "{{ site_nip }}",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "{{ site_street }}",
+            "postalCode": "{{ site_postcode }}",
+            "addressLocality": "{{ site_city }}",
+            "addressCountry": "PL"
+        },
+        "areaServed": "Wielkopolska",
+        "openingHoursSpecification": [
+            {"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "opens": "08:00", "closes": "17:00"},
+            {"@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "08:00", "closes": "14:00"}
+        ]
+    }
+    </script>
+    {% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
     {% url 'core:home' as home_url %}
@@ -50,7 +79,7 @@
                 <a href="{{ home_url }}" class="logo logo-footer">
                     <img src="{% static 'img/logo/logo-autoszyby.svg' %}" alt="{{ site_name }}" width="218" height="96" loading="lazy">
                 </a>
-                <p class="footer-note">Mobilny serwis szyb samochodowych – przyjedziemy do Ciebie w Pleszewie i okolicach.</p>
+                <p class="footer-note">Sprzedaż i montaż szyb samochodowych w Pleszewie od {{ site_founded }} roku. Dojazd do klienta w całej Wielkopolsce.</p>
             </div>
             <div>
                 <h3>Kontakt</h3>
@@ -58,6 +87,14 @@
                     <li><a href="{{ site_phone_href }}">{{ site_phone }}</a></li>
                     <li><a href="mailto:{{ site_email }}">{{ site_email }}</a></li>
                     <li>{{ site_address }}</li>
+                </ul>
+            </div>
+            <div>
+                <h3>Godziny otwarcia</h3>
+                <ul class="footer-list">
+                    <li>{{ site_hours_weekdays }}</li>
+                    <li>{{ site_hours_saturday }}</li>
+                    <li>niedziela – nieczynne</li>
                 </ul>
             </div>
             <div>
@@ -70,7 +107,7 @@
             </div>
         </div>
         <div class="container footer-bottom">
-            <p>&copy; {% now "Y" %} {{ site_name }}. Wszelkie prawa zastrzeżone.</p>
+            <p>&copy; {% now "Y" %} {{ site_name }} · {{ site_company }}, {{ site_address }} · NIP {{ site_nip }}</p>
         </div>
     </footer>
 
