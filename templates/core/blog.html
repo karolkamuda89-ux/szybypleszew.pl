@@ -1,10 +1,12 @@
 {% extends 'base.html' %}
+{# Podstrona bloga. Na razie statyczne zapowiedzi wpisow – docelowo lista wpisow z bazy danych (model w core/models.py) #}
 
 {% block title %}Blog – {{ site_name }}{% endblock %}
 {% block description %}Porady o szybach samochodowych – blog {{ site_name }}.{% endblock %}
 {% block body_class %}page-blog{% endblock %}
 
 {% block content %}
+{# Naglowek podstrony w tym samym grafitowym stylu co baner strony glownej #}
 <section class="page-hero">
     <div class="container">
         <span class="eyebrow">Blog</span>
@@ -13,6 +15,7 @@
     </div>
 </section>
 
+{# Karty wpisow – "Wkrotce" do czasu napisania tresci #}
 <section class="section">
     <div class="container">
         <div class="posts">

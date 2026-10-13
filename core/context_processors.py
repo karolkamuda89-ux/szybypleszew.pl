@@ -1,3 +1,9 @@
+"""Context processor z danymi firmy.
+
+Funkcja `site_info` jest wywolywana przy renderowaniu kazdego szablonu (zarejestrowana
+w settings.TEMPLATES), dzieki czemu w HTML-u mozna uzywac np. {{ site_phone }}
+bez przekazywania tych danych w kazdym widoku. Same dane zmienia sie w config/settings.py.
+"""
 from datetime import date
 
 from django.conf import settings
@@ -5,6 +11,7 @@ from django.conf import settings
 
 def site_info(request):
     phone = settings.SITE_PHONE
+    # Numer w formacie miedzynarodowym (+48...) – potrzebny do linku tel: i danych dla Google.
     digits = phone.replace(' ', '')
     if not digits.startswith('+'):
         digits = '+48' + digits
@@ -13,10 +20,11 @@ def site_info(request):
         'site_company': settings.SITE_COMPANY,
         'site_nip': settings.SITE_NIP,
         'site_founded': settings.SITE_FOUNDED,
+        # Liczba lat na rynku liczy sie sama, nie trzeba jej co roku poprawiac
         'site_years': date.today().year - settings.SITE_FOUNDED,
-        'site_phone': phone,
-        'site_phone_e164': digits,
-        'site_phone_href': 'tel:' + digits,
+        'site_phone': phone,                 # do wyswietlania, np. "607 560 682"
+        'site_phone_e164': digits,           # np. "+48607560682"
+        'site_phone_href': 'tel:' + digits,  # do przyciskow "Zadzwon"
         'site_email': settings.SITE_EMAIL,
         'site_email_alt': settings.SITE_EMAIL_ALT,
         'site_street': settings.SITE_STREET,

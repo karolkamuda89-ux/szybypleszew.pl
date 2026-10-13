@@ -21,11 +21,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# Klucz czytany ze zmiennej srodowiskowej; wartosc domyslna nadaje sie tylko do pracy lokalnej.
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-dev-only-change-me')
 
 # SECURITY WARNING: don't run with debug turned on in production!
+# Na serwerze ustawic DJANGO_DEBUG=False (tryb debug pokazuje szczegoly bledow kazdemu).
 DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
+# Domeny, pod ktorymi strona moze dzialac, oddzielone przecinkami (np. szybypleszew.pl,www.szybypleszew.pl)
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 
@@ -38,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Strona firmowa (widoki, szablony, opinie Google)
     'core',
 ]
 
@@ -56,6 +60,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        # Wspolne szablony projektu (base.html, core/home.html, core/blog.html)
         'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -63,6 +68,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # Dane firmy dostepne w kazdym szablonie, np. {{ site_phone }}
                 'core.context_processors.site_info',
             ],
         },
@@ -118,31 +124,43 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+# Pliki CSS, JS, logo itp. trzymamy w folderze static/
 STATICFILES_DIRS = [BASE_DIR / 'static']
+# Tu `manage.py collectstatic` zbiera wszystkie pliki statyczne przed wdrozeniem na serwer
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Pliki wgrywane przez uzytkownikow (np. zdjecia przez panel admina)
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# ---------------------------------------------------------------------------
 # Dane firmy wyswietlane w szablonach (header, kontakt, stopka, dane strukturalne)
+# Zmiana tutaj aktualizuje je na calej stronie naraz.
+# ---------------------------------------------------------------------------
 SITE_NAME = 'Auto Szyby Pleszew'
 SITE_COMPANY = 'P.H.U. AUTO MAKSYM Joanna Płukarz'
 SITE_NIP = '617 110 227 1'
-SITE_FOUNDED = 2001
-SITE_PHONE = '607 560 682'
-SITE_EMAIL = 'szybypleszew@interia.pl'
-SITE_EMAIL_ALT = 'autoszybypleszew@interia.pl'
+SITE_FOUNDED = 2001          # rok zalozenia – z niego liczy sie "X lat na rynku"
+SITE_PHONE = '607 560 682'   # w formie do wyswietlania; link tel: z +48 tworzy sie sam
+SITE_EMAIL = 'szybypleszew@interia.pl'          # glowny adres
+SITE_EMAIL_ALT = 'autoszybypleszew@interia.pl'  # zapasowy, pokazywany mniejszym drukiem
 SITE_STREET = 'ul. Podgórna 21'
 SITE_POSTCODE = '63-300'
 SITE_CITY = 'Pleszew'
 SITE_HOURS_WEEKDAYS = 'pon.–pt. 8:00–17:00'
 SITE_HOURS_SATURDAY = 'sob. 8:00–14:00'
 
-# Opinie Google (wizytowka "AUTO SZYBY PLESZEW NAJTANIEJ").
+# ---------------------------------------------------------------------------
+# Opinie Google (wizytowka "AUTO SZYBY PLESZEW NAJTANIEJ"), obsluga w core/google_reviews.py.
 # Bez klucza API strona pokazuje tylko ocene z wartosci zapasowych i link do opinii.
+# ---------------------------------------------------------------------------
+# Klucz z Google Cloud (usluga "Places API (New)") i identyfikator wizytowki
 GOOGLE_PLACES_API_KEY = os.environ.get('GOOGLE_PLACES_API_KEY', '')
 GOOGLE_PLACE_ID = os.environ.get('GOOGLE_PLACE_ID', '')
+# Link do wizytowki – przycisk "Zobacz wszystkie opinie"
 GOOGLE_REVIEWS_URL = 'https://maps.app.goo.gl/vNggiK4uxwEbUxC67'
+# Wartosci pokazywane, gdy brak klucza API lub Google nie odpowiada (aktualizowac recznie)
 GOOGLE_RATING_FALLBACK = 4.8
 GOOGLE_RATING_COUNT_FALLBACK = 250
+# Jak dlugo trzymac pobrane opinie w pamieci, zanim zapytamy Google ponownie (12 godzin)
 GOOGLE_REVIEWS_CACHE_SECONDS = 12 * 60 * 60

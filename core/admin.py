@@ -1,3 +1,4 @@
 from django.contrib import admin
 
-# Register your models here.
+# Tu rejestruje sie modele, ktore maja byc edytowalne w panelu /admin/.
+# Na razie strona nie ma wlasnych modeli (np. wpisow bloga), wiec plik jest pusty.

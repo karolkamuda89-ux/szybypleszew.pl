@@ -1,4 +1,10 @@
 {% load static %}
+{% comment %}
+  Szablon bazowy – wspolny dla wszystkich podstron (header z menu, stopka, przycisk "Zadzwon").
+  Podstrony rozszerzaja go przez {% extends 'base.html' %} i wypelniaja bloki:
+  title, description, body_class, content (oraz opcjonalnie structured_data).
+  Dane firmy ({{ site_phone }}, {{ site_address }} itd.) pochodza z core/context_processors.py.
+{% endcomment %}
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -10,6 +16,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,800;1,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {# Dane strukturalne dla Google (schema.org): nazwa, adres, telefon, godziny – pomagaja w wynikach wyszukiwania i Mapach #}
     {% block structured_data %}
     <script type="application/ld+json">
     {
@@ -41,7 +48,9 @@
     {% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
+    {# Adres strony glownej zapisany w zmiennej – linki w menu prowadza do sekcji na stronie glownej (np. /#oferta) takze z bloga #}
     {% url 'core:home' as home_url %}
+    {# HEADER: logo, menu i przycisk "Zadzwon" (call to action). Na telefonie menu chowa sie pod przyciskiem z trzema kreskami #}
     <header class="site-header" id="top">
         <div class="container header-inner">
             <a href="{{ home_url }}" class="logo" aria-label="{{ site_name }} – strona główna">
@@ -52,6 +61,7 @@
                 <span></span><span></span><span></span>
             </button>
 
+            {# data-section wskazuje id sekcji – main.js podswietla na tej podstawie aktywna pozycje menu #}
             <nav class="main-nav" id="main-nav" aria-label="Menu główne">
                 <ul>
                     <li><a href="{{ home_url }}#oferta" data-section="oferta">Oferta</a></li>
@@ -69,10 +79,12 @@
         </div>
     </header>
 
+    {# Tresc konkretnej podstrony (home.html, blog.html) #}
     <main>
         {% block content %}{% endblock %}
     </main>
 
+    {# STOPKA: logo, kontakt, godziny otwarcia, skroty i dane firmy z NIP #}
     <footer class="site-footer">
         <div class="container footer-inner">
             <div>
@@ -111,6 +123,7 @@
         </div>
     </footer>
 
+    {# Okragly przycisk "Zadzwon" w rogu ekranu – widoczny tylko na telefonach (patrz .call-fab w CSS) #}
     <a href="{{ site_phone_href }}" class="call-fab" aria-label="Zadzwoń: {{ site_phone }}">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.6a1 1 0 0 1-.25 1z"/></svg>
     </a>

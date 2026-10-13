@@ -1,5 +1,22 @@
 /* ==========================================================================
-   Paleta z logo: grafit + limonkowa zieleń, akcent "szklany" błękit
+   Arkusz stylów strony Auto Szyby Pleszew
+
+   Spis treści:
+     1. Paleta i zmienne (:root)
+     2. Baza (typografia, kontener, etykiety)
+     3. Przyciski
+     4. Header i menu
+     5. Hero (baner na górze strony)
+     6. Sekcje strony głównej: oferta, producenci, VISEE, o nas, galeria, kontakt, opinie
+     7. Blog
+     8. Stopka i pływający przycisk "Zadzwoń"
+     9. Responsywność (tablet: do 960 px, telefon: do 600 px)
+
+   Kolory zmienia się w jednym miejscu – w zmiennych poniżej.
+   ========================================================================== */
+
+/* ==========================================================================
+   1. Paleta z logo: grafit + limonkowa zieleń, akcent "szklany" błękit
    ========================================================================== */
 :root {
     --lime-50: #f6fde6;
@@ -29,6 +46,7 @@
     --text: var(--graphite-800);
     --text-muted: #5d636a;
 
+    /* Zaokrąglenia, cienie i wysokość headera używane w wielu miejscach */
     --radius: 14px;
     --radius-lg: 22px;
     --shadow-sm: 0 2px 8px rgba(23, 24, 28, .06);
@@ -41,13 +59,13 @@
 }
 
 /* ==========================================================================
-   Baza
+   2. Baza
    ========================================================================== */
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
-    scroll-behavior: smooth;
-    scroll-padding-top: var(--header-h);
+    scroll-behavior: smooth;                 /* płynne przewijanie po kliknięciu w menu */
+    scroll-padding-top: var(--header-h);     /* żeby przyklejony header nie zasłaniał nagłówka sekcji */
 }
 
 body {
@@ -101,7 +119,7 @@ img { max-width: 100%; display: block; }
 .text-accent { color: var(--lime-400); }
 
 /* ==========================================================================
-   Przyciski
+   3. Przyciski
    ========================================================================== */
 .btn {
     display: inline-flex;
@@ -142,8 +160,9 @@ img { max-width: 100%; display: block; }
 .btn-ghost:hover { border-color: var(--lime-500); color: var(--lime-700); }
 
 /* ==========================================================================
-   Header (ciemny – pod logo)
+   4. Header (ciemny – pod logo)
    ========================================================================== */
+/* Header przykleja się do góry ekranu przy przewijaniu (position: sticky) */
 .site-header {
     position: sticky;
     top: 0;
@@ -220,7 +239,7 @@ img { max-width: 100%; display: block; }
 .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
 /* ==========================================================================
-   Hero (grafitowe tło jak w logo)
+   5. Hero (grafitowe tło jak w logo)
    ========================================================================== */
 .hero {
     position: relative;
@@ -279,7 +298,8 @@ img { max-width: 100%; display: block; }
 .hero-stats span { font-size: .9rem; color: var(--graphite-400); }
 .footer-bottom p { line-height: 1.5; }
 
-/* dekoracyjne "tafle szkła" */
+/* Dekoracyjne "tafle szkła" w banerze: pochylone prostokąty (skewX) z gradientem,
+   a pseudo-element ::after rysuje na nich ukośne białe odblaski */
 .hero-visual {
     position: relative;
     height: 420px;
@@ -318,7 +338,7 @@ img { max-width: 100%; display: block; }
 }
 
 /* ==========================================================================
-   Sekcje
+   6. Sekcje strony głównej
    ========================================================================== */
 .section { padding: 96px 0; }
 .section-tint { background: var(--graphite-50); }
@@ -632,7 +652,7 @@ img { max-width: 100%; display: block; }
 .rating-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 
 /* ==========================================================================
-   Blog (podstrona)
+   7. Blog (podstrona)
    ========================================================================== */
 .page-hero {
     padding: 72px 0 48px;
@@ -681,7 +701,7 @@ img { max-width: 100%; display: block; }
 }
 
 /* ==========================================================================
-   Stopka
+   8. Stopka
    ========================================================================== */
 .site-footer {
     background: var(--graphite-950);
@@ -709,7 +729,9 @@ img { max-width: 100%; display: block; }
 }
 .footer-bottom p { margin: 0; }
 
-/* Pływający przycisk "zadzwoń" – tylko mobile */
+/* ==========================================================================
+   8. Pływający przycisk "zadzwoń" – tylko mobile (włączany w media query poniżej)
+   ========================================================================== */
 .call-fab {
     display: none;
     position: fixed;
@@ -726,7 +748,7 @@ img { max-width: 100%; display: block; }
 .call-fab svg { width: 26px; height: 26px; fill: var(--graphite-950); }
 
 /* ==========================================================================
-   Responsywność
+   9. Responsywność
    ========================================================================== */
 @media (max-width: 1120px) {
     .main-nav { gap: 14px; }
@@ -735,6 +757,8 @@ img { max-width: 100%; display: block; }
     .cards-3 { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* Tablet i mniejsze: menu chowa się pod przyciskiem "hamburger" i wysuwa z góry,
+   układy dwukolumnowe przechodzą w jedną kolumnę, pojawia się pływający przycisk "Zadzwoń" */
 @media (max-width: 960px) {
     .nav-toggle { display: flex; }
 
@@ -776,6 +800,7 @@ img { max-width: 100%; display: block; }
     .call-fab { display: grid; }
 }
 
+/* Telefon: wszystko w jednej kolumnie, mniejsze odstępy, przyciski na całą szerokość */
 @media (max-width: 600px) {
     :root { --header-h: 72px; }
     .container { padding: 0 16px; }
@@ -795,6 +820,7 @@ img { max-width: 100%; display: block; }
     .hero-visual { display: none; }
 }
 
+/* Dla osób, które w systemie wyłączyły animacje – bez płynnego przewijania i przejść */
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after { transition: none !important; }

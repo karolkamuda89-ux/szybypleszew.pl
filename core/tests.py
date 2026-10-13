@@ -1,3 +1,4 @@
+"""Testy strony. Uruchomienie: python manage.py test"""
 from unittest import mock
 
 from django.core.cache import cache
@@ -6,6 +7,8 @@ from django.urls import reverse
 
 from .google_reviews import get_google_reviews
 
+# Przykladowa odpowiedz Google Places API – testy nie lacza sie z prawdziwym Google.
+# Zawiera opinie dobra, slaba (2 gwiazdki) i bez tresci, zeby sprawdzic filtrowanie.
 PLACES_RESPONSE = {
     'rating': 4.7,
     'userRatingCount': 251,
@@ -23,6 +26,8 @@ PLACES_RESPONSE = {
 
 
 class HomePageTests(TestCase):
+    """Strona glowna: czy sie otwiera i czy zawiera kluczowe elementy."""
+
     def test_home_page_returns_200(self):
         response = self.client.get(reverse('core:home'))
         self.assertEqual(response.status_code, 200)
@@ -42,13 +47,18 @@ class HomePageTests(TestCase):
 
 
 class BlogPageTests(TestCase):
+    """Podstrona bloga."""
+
     def test_blog_page_returns_200(self):
         response = self.client.get(reverse('core:blog'))
         self.assertEqual(response.status_code, 200)
 
 
 class GoogleReviewsTests(TestCase):
+    """Pobieranie opinii Google: dane zapasowe, filtrowanie, cache i obsluga bledow."""
+
     def setUp(self):
+        # Czyscimy cache, zeby wynik jednego testu nie wplywal na kolejny
         cache.clear()
 
     @override_settings(GOOGLE_PLACES_API_KEY='', GOOGLE_PLACE_ID='')
