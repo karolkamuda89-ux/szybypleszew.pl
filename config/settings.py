@@ -42,6 +42,21 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 # Domeny, pod ktorymi strona moze dzialac, oddzielone przecinkami (np. szybypleszew.pl,www.szybypleszew.pl)
 ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
+# Adresy, z ktorych mozna wysylac formularze przez HTTPS (formularz kontaktowy, panel admina)
+CSRF_TRUSTED_ORIGINS = [f'https://{host}' for host in ALLOWED_HOSTS if host not in ('localhost', '127.0.0.1')]
+
+# Bezpieczenstwo na serwerze (tylko gdy DEBUG=False): wymuszenie HTTPS i bezpieczne ciasteczka.
+if not DEBUG:
+    # Serwer stoi za proxy (np. Cloudflare / hosting), ktore przekazuje informacje o HTTPS w naglowku
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    # Przekierowanie http:// -> https:// (mozna wylaczyc DJANGO_SSL_REDIRECT=False, gdy robi to Cloudflare)
+    SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SSL_REDIRECT', 'True') == 'True'
+    SESSION_COOKIE_SECURE = True    # ciasteczko logowania do panelu tylko przez HTTPS
+    CSRF_COOKIE_SECURE = True       # ciasteczko ochrony formularzy tylko przez HTTPS
+    # HSTS: przegladarka zapamietuje, ze strona dziala tylko po HTTPS. Na start 1 godzina;
+    # gdy wszystko dziala, mozna podniesc (np. DJANGO_HSTS_SECONDS=31536000 = rok).
+    SECURE_HSTS_SECONDS = int(os.environ.get('DJANGO_HSTS_SECONDS', '3600'))
+
 
 # Application definition
 
