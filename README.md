@@ -43,3 +43,23 @@ python manage.py migrate
 python manage.py createsuperuser      # konto do logowania w panelu
 python manage.py import_gallery       # wczytanie startowej galerii z core/gallery.py
 ```
+
+## Wdrożenie (serwer Hetzner, Ubuntu)
+
+Strona działa jako: **nginx** (serwer WWW, HTTPS, pliki statyczne) → **Gunicorn** (Django) → **PostgreSQL** (baza).
+Zdjęcia z panelu trafiają do **Cloudflare R2**, więc nie znikają przy aktualizacjach ani przenosinach serwera.
+
+Pliki konfiguracyjne są w folderze `deploy/`:
+
+| Plik | Do czego |
+|---|---|
+| `szybypleszew.service` | usługa systemd – uruchamia Gunicorna i podnosi stronę po restarcie serwera |
+| `nginx-szybypleszew.conf` | konfiguracja nginx (limit wgrywanych plików 50 MB, cache, kompresja) |
+| `deploy.sh` | aktualizacja strony jedną komendą: `bash /home/szybypleszew/app/deploy/deploy.sh` |
+| `backup.sh` | codzienna kopia bazy (14 dni wstecz) – do crona |
+
+Zmienne środowiskowe na serwerze (plik `/home/szybypleszew/app/.env`, wzór w `.env.example`):
+`DJANGO_DEBUG=False`, `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS`, `DATABASE_URL`, `GOOGLE_PLACES_API_KEY`,
+dane poczty (`EMAIL_*`) i Cloudflare R2 (`R2_*`).
+
+Pierwsze wgranie zdjęć do R2: `python manage.py upload_media`, potem `python manage.py import_gallery`.

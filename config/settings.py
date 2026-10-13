@@ -111,12 +111,18 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+# Baza danych: na serwerze PostgreSQL z DATABASE_URL (np. postgres://uzytkownik:haslo@localhost:5432/szybypleszew),
+# lokalnie – plik db.sqlite3.
+if os.environ.get('DATABASE_URL'):
+    import dj_database_url
+    DATABASES = {'default': dj_database_url.parse(os.environ['DATABASE_URL'], conn_max_age=600)}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
 
 
 # Password validation
@@ -162,6 +168,48 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Pliki wgrywane przez uzytkownikow (np. zdjecia przez panel admina)
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+# ---------------------------------------------------------------------------
+# Gdzie trzymane sa pliki
+#  - zdjecia (galeria, blog, sekcja "Nowość"): na serwerze w Cloudflare R2, lokalnie w media/.
+#    Dzieki R2 zdjecia dodane w panelu nie znikaja przy aktualizacji / przenosinach serwera.
+#  - CSS/JS/logo (static/): na serwerze z numerem wersji w nazwie pliku (ManifestStaticFilesStorage),
+#    zeby po aktualizacji przegladarki nie pokazywaly starych wersji. Wymaga `manage.py collectstatic`.
+# ---------------------------------------------------------------------------
+R2_BUCKET = os.environ.get('R2_BUCKET', '')
+if R2_BUCKET:
+    # Jeden bucket moze obslugiwac kilka stron – kazda ma swoj folder (R2_PREFIX)
+    R2_PREFIX = os.environ.get('R2_PREFIX', 'szybypleszew').strip('/')
+    R2_PUBLIC_DOMAIN = os.environ['R2_PUBLIC_DOMAIN'].strip('/')   # np. media.szybypleszew.pl
+    _media_storage = {
+        'BACKEND': 'storages.backends.s3.S3Storage',
+        'OPTIONS': {
+            'bucket_name': R2_BUCKET,
+            'endpoint_url': f"https://{os.environ['R2_ACCOUNT_ID']}.r2.cloudflarestorage.com",
+            'access_key': os.environ['R2_ACCESS_KEY_ID'],
+            'secret_key': os.environ['R2_SECRET_ACCESS_KEY'],
+            'region_name': 'auto',
+            'signature_version': 's3v4',
+            'location': R2_PREFIX,
+            'custom_domain': R2_PUBLIC_DOMAIN,   # publiczny adres zdjec (bez podpisywania linkow)
+            'querystring_auth': False,
+            'file_overwrite': False,              # ta sama nazwa pliku -> Django doda dopisek, nic nie nadpisze
+            'default_acl': None,
+            # zdjecia sie nie zmieniaja (nowa wersja = nowa nazwa), wiec przegladarki moga je trzymac dlugo
+            'object_parameters': {'CacheControl': 'public, max-age=31536000, immutable'},
+        },
+    }
+    MEDIA_URL = f'https://{R2_PUBLIC_DOMAIN}/{R2_PREFIX}/'
+else:
+    _media_storage = {'BACKEND': 'django.core.files.storage.FileSystemStorage'}
+
+STORAGES = {
+    'default': _media_storage,
+    'staticfiles': {
+        'BACKEND': ('django.contrib.staticfiles.storage.StaticFilesStorage' if DEBUG
+                    else 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'),
+    },
+}
 
 # ---------------------------------------------------------------------------
 # Dane firmy wyswietlane w szablonach (header, kontakt, stopka, dane strukturalne)

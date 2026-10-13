@@ -1,2 +1,10 @@
 Django>=6.0,<6.1
 Pillow>=11.0
+# Serwer produkcyjny
+gunicorn>=23.0
+# Baza PostgreSQL na serwerze (adres w DATABASE_URL)
+psycopg[binary]>=3.2
+dj-database-url>=2.2
+# Zdjecia w Cloudflare R2 (API zgodne z S3)
+django-storages[s3]>=1.14
+boto3>=1.35
