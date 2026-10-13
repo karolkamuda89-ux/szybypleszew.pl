@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% comment %}
+  Polityka prywatnosci. Tresc to WZOR dopasowany do tego, co strona robi (formularz kontaktowy,
+  opinie i czcionki Google, ciasteczka techniczne). Przed publikacja warto ja zweryfikowac
+  (np. z ksiegowa/prawnikiem) – szczegolnie okres przechowywania danych.
+  Dane firmy pochodza z config/settings.py.
+{% endcomment %}
+
+{% block title %}Polityka prywatności – {{ site_name }}{% endblock %}
+{% block description %}Polityka prywatności strony {{ site_name }}: jakie dane zbieramy, w jakim celu i jakie prawa Ci przysługują.{% endblock %}
+{% block body_class %}page-blog page-post{% endblock %}
+
+{% block content %}
+<section class="page-hero post-hero">
+    <div class="container post-container">
+        <span class="eyebrow">Informacje</span>
+        <h1>Polityka prywatności</h1>
+        <p class="lead">Jakie dane zbieramy przez stronę, w jakim celu i jakie prawa Ci przysługują.</p>
+    </div>
+</section>
+
+<article class="section post-article">
+    <div class="container post-container prose">
+        <h2>1. Administrator danych</h2>
+        <p>Administratorem danych osobowych jest <strong>{{ site_company }}</strong>, {{ site_address }}, NIP {{ site_nip }}. W sprawach dotyczących danych osobowych możesz skontaktować się z nami telefonicznie: <a href="{{ site_phone_href }}">{{ site_phone }}</a> lub e-mailem: <a href="mailto:{{ site_email }}">{{ site_email }}</a>.</p>
+
+        <h2>2. Jakie dane zbieramy i po co</h2>
+        <p>Gdy wysyłasz wiadomość przez formularz kontaktowy, przetwarzamy podane w nim dane: imię, numer telefonu, opcjonalnie adres e-mail i informacje o samochodzie oraz treść wiadomości. Używamy ich wyłącznie po to, żeby odpowiedzieć na zapytanie, przygotować wycenę i umówić termin usługi.</p>
+        <p>Podstawą przetwarzania jest Twoja zgoda wyrażona w formularzu (art. 6 ust. 1 lit. a RODO) oraz działania zmierzające do zawarcia umowy na Twoje żądanie (art. 6 ust. 1 lit. b RODO). Podanie danych jest dobrowolne, ale bez numeru telefonu nie będziemy mogli się z Tobą skontaktować.</p>
+
+        <h2>3. Jak długo przechowujemy dane</h2>
+        <p>Dane z formularza przechowujemy przez czas potrzebny do obsługi zapytania, a następnie nie dłużej niż 12 miesięcy. Jeśli skorzystasz z naszych usług, dane mogą być przechowywane dłużej – przez okres wymagany przepisami (np. podatkowymi) lub do czasu przedawnienia ewentualnych roszczeń.</p>
+
+        <h2>4. Komu przekazujemy dane</h2>
+        <p>Nie sprzedajemy ani nie udostępniamy Twoich danych innym firmom w celach marketingowych. Dostęp do nich mogą mieć jedynie podmioty, które świadczą dla nas usługi techniczne – firma hostingowa, na której serwerach działa strona, oraz dostawca poczty e-mail.</p>
+
+        <h2>5. Twoje prawa</h2>
+        <p>Masz prawo do:</p>
+        <ul>
+            <li>dostępu do swoich danych i otrzymania ich kopii,</li>
+            <li>sprostowania (poprawienia) danych,</li>
+            <li>usunięcia danych lub ograniczenia ich przetwarzania,</li>
+            <li>wycofania zgody w dowolnym momencie (nie wpływa to na zgodność z prawem przetwarzania przed jej wycofaniem),</li>
+            <li>wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych.</li>
+        </ul>
+        <p>Aby skorzystać z tych praw, skontaktuj się z nami telefonicznie lub e-mailem.</p>
+
+        <h2>6. Pliki cookies</h2>
+        <p>Strona używa wyłącznie niezbędnych, technicznych plików cookies – służą one bezpieczeństwu formularza kontaktowego oraz wyświetleniu komunikatu po jego wysłaniu. Nie używamy cookies reklamowych ani analitycznych.</p>
+
+        <h2>7. Usługi zewnętrzne</h2>
+        <p>Na stronie korzystamy z usług Google: czcionek Google Fonts oraz opinii z naszej wizytówki Google (wraz ze zdjęciami profilowymi autorów opinii). Przy ich wczytywaniu Twoja przeglądarka łączy się z serwerami Google, które mogą otrzymać m.in. Twój adres IP. Linki do Map Google i naszego profilu na Facebooku prowadzą do serwisów tych firm, w których obowiązują ich własne zasady prywatności.</p>
+
+        <h2>8. Zmiany polityki prywatności</h2>
+        <p>Polityka może być aktualizowana, np. przy zmianie funkcji strony. Aktualna wersja jest zawsze dostępna na tej stronie.</p>
+    </div>
+</article>
+{% endblock %}

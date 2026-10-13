@@ -311,7 +311,7 @@
 
                 <label class="form-consent{% if contact_form.consent.errors %} has-error{% endif %}">
                     {{ contact_form.consent }}
-                    <span>{{ contact_form.consent.label }}</span>
+                    <span>Wyrażam zgodę na przetwarzanie moich danych w celu odpowiedzi na zapytanie. Szczegóły w <a href="{% url 'core:privacy' %}" target="_blank">polityce prywatności</a>.</span>
                 </label>
                 {% for error in contact_form.consent.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
 

@@ -783,6 +783,7 @@ img { max-width: 100%; display: block; }
 .form-consent { display: flex; gap: 10px; align-items: flex-start; font-size: .85rem; color: var(--graphite-300); cursor: pointer; }
 .form-consent input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--lime-400); flex-shrink: 0; }
 .form-consent.has-error span { color: #ff8a8a; }
+.form-consent a { color: var(--lime-400); }
 .form-submit { width: 100%; margin-top: 4px; }
 .form-success {
     margin-bottom: 18px;
@@ -985,28 +986,65 @@ img { max-width: 100%; display: block; }
 .site-footer {
     background: var(--graphite-950);
     color: var(--graphite-300);
-    padding: 56px 0 0;
+    padding: 64px 0 0;
 }
+/* 4 kolumny: marka (szersza) | nawigacja | kontakt | obserwuj */
 .footer-inner {
     display: grid;
-    grid-template-columns: 1.3fr 1fr 1fr .8fr;
-    gap: 40px;
-    padding-bottom: 40px;
+    grid-template-columns: 1.5fr 1fr 1.2fr 1fr;
+    gap: 48px;
+    padding-bottom: 48px;
 }
 .logo.logo-footer img { height: 96px; }
-.footer-note { color: var(--graphite-400); margin-top: 14px; max-width: 320px; }
-.site-footer h3 { font-size: 1rem; color: #fff; }
-.footer-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.footer-list a { color: var(--graphite-300); text-decoration: none; }
+.footer-note { color: var(--graphite-300); margin-top: 18px; max-width: 320px; line-height: 1.7; }
+.site-footer h3 { font-size: 1rem; color: #fff; margin: 6px 0 18px; }
+.footer-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.footer-list a { color: var(--graphite-300); text-decoration: none; transition: color .2s; }
 .footer-list a:hover { color: var(--lime-400); }
+.footer-contact li { line-height: 1.6; }
+.footer-hours { color: var(--graphite-400); font-size: .9rem; }
+
+/* Okrągłe ikony mediów społecznościowych */
+.footer-social { display: flex; gap: 12px; flex-wrap: wrap; }
+.footer-social a {
+    width: 42px;
+    height: 42px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, .16);
+    color: var(--graphite-200);
+    transition: color .2s, border-color .2s, background .2s;
+}
+.footer-social a:hover { color: var(--graphite-950); background: var(--lime-400); border-color: var(--lime-400); }
+.footer-social svg { width: 19px; height: 19px; fill: currentColor; }
+
+/* Dolny pasek: prawa autorskie | polityka prywatności (środek) | autor */
 .footer-bottom {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 16px;
     border-top: 1px solid rgba(255, 255, 255, .08);
-    padding-top: 18px;
-    padding-bottom: 18px;
-    font-size: .85rem;
-    color: var(--graphite-400);
+    padding-top: 22px;
+    padding-bottom: 22px;
+    font-size: .9rem;
+    color: var(--graphite-300);
 }
 .footer-bottom p { margin: 0; }
+.footer-bottom p:last-child { text-align: right; }
+.footer-bottom a { color: var(--graphite-300); text-decoration: none; }
+.footer-bottom a:hover { color: var(--lime-400); }
+/* Najniższa linia: dane firmy, wyśrodkowane */
+.footer-legal {
+    border-top: 1px solid rgba(255, 255, 255, .08);
+    padding-top: 18px;
+    padding-bottom: 22px;
+    text-align: center;
+    font-size: .82rem;
+    color: var(--graphite-400);
+}
+.footer-legal p { margin: 0; }
 
 /* ==========================================================================
    8. Pływający przycisk "zadzwoń" – tylko mobile (włączany w media query poniżej)
@@ -1073,8 +1111,11 @@ img { max-width: 100%; display: block; }
     .reviews,
     .posts { grid-template-columns: 1fr 1fr; }
     #nowosc .split-media { order: -1; }
-    .footer-inner { grid-template-columns: 1fr 1fr; }
+    .footer-inner { grid-template-columns: 1fr 1fr; gap: 36px; }
     .footer-inner > :first-child { grid-column: 1 / -1; }
+    /* Dolny pasek w jednej kolumnie, wszystko wyśrodkowane */
+    .footer-bottom { grid-template-columns: 1fr; text-align: center; }
+    .footer-bottom p:last-child { text-align: center; }
 
     .call-fab { display: grid; }
 }

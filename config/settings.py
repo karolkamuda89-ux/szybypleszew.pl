@@ -162,6 +162,10 @@ SITE_POSTCODE = '63-300'
 SITE_CITY = 'Pleszew'
 SITE_HOURS_WEEKDAYS = 'pon.–pt. 8:00–17:00'
 SITE_HOURS_SATURDAY = 'sob. 8:00–14:00'
+# Media spolecznosciowe w stopce (puste = ikona sie nie wyswietla)
+SITE_FACEBOOK = 'https://www.facebook.com/szybypleszew'
+# Autor strony – podpis w stopce
+SITE_AUTHOR = 'Karol Kamuda'
 
 # ---------------------------------------------------------------------------
 # Opinie Google (wizytowka "AUTO SZYBY PLESZEW NAJTANIEJ"), obsluga w core/google_reviews.py.

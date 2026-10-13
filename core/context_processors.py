@@ -33,4 +33,8 @@ def site_info(request):
         'site_address': f'{settings.SITE_STREET}, {settings.SITE_POSTCODE} {settings.SITE_CITY}',
         'site_hours_weekdays': settings.SITE_HOURS_WEEKDAYS,
         'site_hours_saturday': settings.SITE_HOURS_SATURDAY,
+        'site_facebook': settings.SITE_FACEBOOK,
+        'site_author': settings.SITE_AUTHOR,
+        # Link do wizytowki Google – ikona w stopce
+        'site_google_maps': settings.GOOGLE_REVIEWS_URL,
     }

@@ -102,3 +102,8 @@ def blog_post(request, slug):
     # "Przeczytaj tez" – 3 najnowsze inne wpisy
     others = live_posts().exclude(pk=post.pk)[:3]
     return render(request, 'core/blog_post.html', {'post': post, 'others': others})
+
+
+def privacy(request):
+    """Polityka prywatnosci (tresc w szablonie core/privacy.html)."""
+    return render(request, 'core/privacy.html')

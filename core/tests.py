@@ -276,6 +276,21 @@ class ContactFormTests(TestCase):
         self.assertEqual(self.client.get('/admin/core/contactmessage/add/').status_code, 403)
 
 
+class FooterAndPrivacyTests(TestCase):
+    """Stopka (Facebook, autor, polityka prywatnosci) i strona polityki prywatnosci."""
+
+    def test_footer_has_social_links_author_and_privacy(self):
+        response = self.client.get(reverse('core:home'))
+        self.assertContains(response, 'href="https://www.facebook.com/szybypleszew"')
+        self.assertContains(response, 'Projekt i wykonanie: Karol Kamuda')
+        self.assertContains(response, f'href="{reverse("core:privacy")}"')
+
+    def test_privacy_page(self):
+        response = self.client.get(reverse('core:privacy'))
+        self.assertContains(response, 'Polityka prywatności')
+        self.assertContains(response, 'P.H.U. AUTO MAKSYM Joanna Płukarz')
+
+
 class BlogTests(TestCase):
     """Blog: lista, pojedynczy wpis, szkice/planowanie, formatowanie tresci i panel."""
 

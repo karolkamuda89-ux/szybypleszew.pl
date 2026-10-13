@@ -12,4 +12,6 @@ urlpatterns = [
     # Blog: lista wpisow i pojedynczy wpis (osobne szablony)
     path('blog/', views.blog, name='blog'),
     path('blog/<slug:slug>/', views.blog_post, name='blog_post'),
+    # Polityka prywatnosci (link w stopce i przy zgodzie w formularzu)
+    path('polityka-prywatnosci/', views.privacy, name='privacy'),
 ]
