@@ -145,7 +145,7 @@
         </div>
         <div class="split-media">
             {% if promo.image %}
-            <div class="visee-photo"><img src="{{ promo.image.url }}" alt="{{ promo.image_alt|default:promo.title }}" loading="lazy"></div>
+            <div class="visee-photo visee-photo-img"><img src="{{ promo.image.url }}" alt="{{ promo.image_alt|default:promo.title }}" loading="lazy"></div>
             {% else %}
             <div class="visee-photo" aria-hidden="true"><span>{{ promo.placeholder }}</span></div>
             {% endif %}
