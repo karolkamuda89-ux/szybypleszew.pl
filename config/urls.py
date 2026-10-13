@@ -30,3 +30,6 @@ urlpatterns = [
 # Na serwerze produkcyjnym robi to serwer WWW (np. nginx), wiec ten blok sie nie wykona.
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # Podglad strony bledu 404 – lokalnie Django zamiast niej pokazuje swoja strone diagnostyczna
+    from django.views.defaults import page_not_found
+    urlpatterns += [path('podglad-404/', lambda request: page_not_found(request, None))]

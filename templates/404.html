@@ -1,10 +1,17 @@
 {% extends 'base.html' %}
-{# Strona bledu 404 (nie ma takiej strony). Django uzywa jej automatycznie, gdy DEBUG=False (na serwerze). #}
+{% comment %}
+  Strona bledu 404 (nie ma takiej strony). Django uzywa jej automatycznie, gdy DEBUG=False (na serwerze).
+  Lokalnie (DEBUG=True) mozna ja obejrzec pod adresem /podglad-404/.
+  Po 10 sekundach przenosi na strone glowna: odliczanie w JavaScripcie, a gdy JS jest wylaczony –
+  zapasowo znacznik <meta http-equiv="refresh">. Klikniecie "Zostań na tej stronie" zatrzymuje odliczanie.
+{% endcomment %}
 
 {% block title %}Nie znaleziono strony | {{ site_name }}{% endblock %}
 {% block description %}Nie ma takiej strony. Przejdź na stronę główną {{ site_name }} albo zadzwoń: {{ site_phone }}.{% endblock %}
 {# Strony bledu nie powinny trafiac do wynikow Google #}
 {% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{# Zapasowe przekierowanie dla przegladarek bez JavaScriptu (z JS odliczaniem zajmuje sie skrypt ponizej) #}
+{% block extra_head %}<noscript><meta http-equiv="refresh" content="10;url={% url 'core:home' %}"></noscript>{% endblock %}
 {% block body_class %}page-blog{% endblock %}
 
 {% block content %}
@@ -12,11 +19,36 @@
     <div class="container">
         <span class="eyebrow">Błąd 404</span>
         <h1>Nie ma takiej strony</h1>
-        <p class="lead">Link mógł się zmienić albo strona została usunięta. Zacznij od strony głównej albo po prostu zadzwoń – pomożemy.</p>
+        <p class="lead">Link mógł się zmienić albo strona została usunięta. Zacznij od strony głównej albo po prostu zadzwoń, pomożemy.</p>
         <div class="hero-actions">
             <a href="{% url 'core:home' %}" class="btn btn-cta btn-lg">Strona główna</a>
             <a href="{{ site_phone_href }}" class="btn btn-ghost btn-lg not-found-call">Zadzwoń: {{ site_phone }}</a>
         </div>
+        <p class="redirect-note" id="redirect-note">
+            Za <strong id="countdown">10</strong> s przeniesiemy Cię na stronę główną.
+            <button type="button" id="redirect-stop" class="redirect-stop">Zostań na tej stronie</button>
+        </p>
     </div>
 </section>
+
+<script>
+    // Odliczanie do przekierowania na strone glowna (10 s). Mozna je zatrzymac przyciskiem.
+    (function () {
+        var seconds = 10;
+        var counter = document.getElementById('countdown');
+        var note = document.getElementById('redirect-note');
+        var timer = setInterval(function () {
+            seconds -= 1;
+            counter.textContent = seconds;
+            if (seconds <= 0) {
+                clearInterval(timer);
+                window.location.href = '{% url "core:home" %}';
+            }
+        }, 1000);
+        document.getElementById('redirect-stop').addEventListener('click', function () {
+            clearInterval(timer);
+            note.textContent = 'Przekierowanie zatrzymane.';
+        });
+    })();
+</script>
 {% endblock %}

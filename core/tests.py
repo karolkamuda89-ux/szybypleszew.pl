@@ -357,6 +357,9 @@ class SeoTests(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertContains(response, 'Nie ma takiej strony', status_code=404)
         self.assertContains(response, '<meta name="robots" content="noindex">', status_code=404)
+        # przekierowanie na strone glowna: odliczanie w JS + zapasowy meta refresh bez JS
+        self.assertContains(response, 'id="countdown"', status_code=404)
+        self.assertContains(response, '<meta http-equiv="refresh" content="10;url=/">', status_code=404)
 
 
 class BlogTests(TestCase):
