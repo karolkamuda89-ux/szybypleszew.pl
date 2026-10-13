@@ -16,6 +16,17 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Lokalny plik .env (wzor: .env.example) z kluczami i haslami – NIE trafia do Gita (.gitignore).
+# Kazda linia KLUCZ=wartosc staje sie zmienna srodowiskowa, chyba ze taka zmienna juz jest ustawiona
+# (na serwerze zmienne ustawia sie w panelu hostingu i one maja pierwszenstwo).
+_env_file = BASE_DIR / '.env'
+if _env_file.exists():
+    for _line in _env_file.read_text(encoding='utf-8').splitlines():
+        _line = _line.strip()
+        if _line and not _line.startswith('#') and '=' in _line:
+            _key, _value = _line.split('=', 1)
+            os.environ.setdefault(_key.strip(), _value.strip().strip('"').strip("'"))
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -158,12 +169,17 @@ SITE_HOURS_SATURDAY = 'sob. 8:00–14:00'
 # ---------------------------------------------------------------------------
 # Klucz z Google Cloud (usluga "Places API (New)") i identyfikator wizytowki
 GOOGLE_PLACES_API_KEY = os.environ.get('GOOGLE_PLACES_API_KEY', '')
-GOOGLE_PLACE_ID = os.environ.get('GOOGLE_PLACE_ID', '')
+# Podczas testow (manage.py test) nie laczymy sie z prawdziwym Google – testy uzywaja udawanych odpowiedzi
+import sys  # noqa: E402
+if 'test' in sys.argv:
+    GOOGLE_PLACES_API_KEY = ''
+# Identyfikator wizytowki AUTO SZYBY PLESZEW NAJTANIEJ (nie jest tajny, wiec moze byc w kodzie)
+GOOGLE_PLACE_ID = os.environ.get('GOOGLE_PLACE_ID') or 'ChIJu1ampuotBUcRARPFgkxplGI'
 # Link do wizytowki – przycisk "Zobacz wszystkie opinie"
 GOOGLE_REVIEWS_URL = 'https://maps.app.goo.gl/vNggiK4uxwEbUxC67'
 # Wartosci pokazywane, gdy brak klucza API lub Google nie odpowiada (aktualizowac recznie)
 GOOGLE_RATING_FALLBACK = 4.8
-GOOGLE_RATING_COUNT_FALLBACK = 250
+GOOGLE_RATING_COUNT_FALLBACK = 251
 # Jak dlugo trzymac pobrane opinie w pamieci, zanim zapytamy Google ponownie (12 godzin)
 GOOGLE_REVIEWS_CACHE_SECONDS = 12 * 60 * 60
 

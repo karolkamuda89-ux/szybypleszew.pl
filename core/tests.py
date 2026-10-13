@@ -391,9 +391,10 @@ class GoogleReviewsTests(TestCase):
 
     @override_settings(GOOGLE_PLACES_API_KEY='', GOOGLE_PLACE_ID='')
     def test_without_api_key_uses_fallback(self):
+        from django.conf import settings
         data = get_google_reviews()
-        self.assertEqual(data['rating'], 4.8)
-        self.assertEqual(data['count'], 250)
+        self.assertEqual(data['rating'], settings.GOOGLE_RATING_FALLBACK)
+        self.assertEqual(data['count'], settings.GOOGLE_RATING_COUNT_FALLBACK)
         self.assertEqual(data['reviews'], [])
 
     @override_settings(GOOGLE_PLACES_API_KEY='key', GOOGLE_PLACE_ID='place')
@@ -410,7 +411,8 @@ class GoogleReviewsTests(TestCase):
     @override_settings(GOOGLE_PLACES_API_KEY='key', GOOGLE_PLACE_ID='place')
     def test_api_error_falls_back(self):
         import urllib.error
+        from django.conf import settings
         with mock.patch('core.google_reviews._fetch', side_effect=urllib.error.URLError('down')):
             data = get_google_reviews()
-        self.assertEqual(data['rating'], 4.8)
+        self.assertEqual(data['rating'], settings.GOOGLE_RATING_FALLBACK)
         self.assertEqual(data['reviews'], [])
