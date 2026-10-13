@@ -118,29 +118,41 @@
     </div>
 </section>
 
-<!-- PIORA WYCIERACZEK VISEE -->
-{# Osobna sekcja promujaca nowa wspolprace z VISEE. Na telefonie zdjecie wyswietla sie nad tekstem #}
-<section class="section section-tint" id="wycieraczki">
+<!-- NOWOSC (obecnie: piora wycieraczek VISEE) -->
+{% comment %}
+  Tresc sekcji edytuje sie w panelu admina (/admin/ -> Sekcja „Nowość”).
+  Gdy sekcja jest schowana w panelu, nie wyswietla sie wcale. Na telefonie zdjecie jest nad tekstem.
+{% endcomment %}
+{% if promo %}
+<section class="section section-tint" id="nowosc">
     <div class="container split">
         <div class="split-text">
-            <span class="eyebrow">Nowość · pióra wycieraczek</span>
-            <h2>Pióra wycieraczek VISEE z montażem od ręki</h2>
-            <p>Nawiązaliśmy współpracę z VISEE – polskim producentem piór wycieraczek. Dobierzemy pióra do Twojego auta i od razu je zamontujemy, także przy okazji wymiany szyby.</p>
+            {% if promo.label %}<span class="eyebrow">{{ promo.label }}</span>{% endif %}
+            <h2>{{ promo.title }}</h2>
+            {{ promo.text|linebreaks }}
+            {% if promo.bullet_list %}
             <ul class="checklist">
-                <li>Polska produkcja</li>
-                <li>Dobór do konkretnego modelu auta</li>
-                <li>Montaż na miejscu – odjeżdżasz z nowymi wycieraczkami</li>
+                {% for bullet in promo.bullet_list %}<li>{{ bullet }}</li>{% endfor %}
             </ul>
-            <a href="{{ site_phone_href }}" class="btn btn-cta btn-lg">Zapytaj o pióra: {{ site_phone }}</a>
+            {% endif %}
+            {% if promo.button_text %}
+                {% if promo.button_link %}
+                <a href="{{ promo.button_link }}" class="btn btn-cta btn-lg"{% if promo.button_link|slice:":4" == "http" %} target="_blank" rel="noopener"{% endif %}>{{ promo.button_text }}</a>
+                {% else %}
+                <a href="{{ site_phone_href }}" class="btn btn-cta btn-lg">{{ promo.button_text }}: {{ site_phone }}</a>
+                {% endif %}
+            {% endif %}
         </div>
         <div class="split-media">
-            {# TODO: podmienic na zdjecie od klienta: static/img/visee.jpg #}
-            <div class="visee-photo" aria-hidden="true">
-                <span>VISEE</span>
-            </div>
+            {% if promo.image %}
+            <div class="visee-photo"><img src="{{ promo.image.url }}" alt="{{ promo.image_alt|default:promo.title }}" loading="lazy"></div>
+            {% else %}
+            <div class="visee-photo" aria-hidden="true"><span>{{ promo.placeholder }}</span></div>
+            {% endif %}
         </div>
     </div>
 </section>
+{% endif %}
 
 <!-- O NAS -->
 {# Historia firmy. Rok zalozenia i liczba lat licza sie z SITE_FOUNDED w settings.py #}

@@ -9,7 +9,7 @@ from django.shortcuts import render
 
 from .gallery import GALLERY_VISIBLE, PHOTO_ABOUT, PHOTO_HERO
 from .google_reviews import get_google_reviews
-from .models import GalleryItem, GalleryPhoto
+from .models import GalleryItem, GalleryPhoto, PromoSection
 
 
 def home(request):
@@ -20,6 +20,8 @@ def home(request):
     gallery = [item for item in items if item.photos.all()]
     return render(request, 'core/home.html', {
         'google': get_google_reviews(),
+        # Sekcja "Nowość" (edytowana w panelu); None = schowana
+        'promo': PromoSection.objects.filter(is_published=True).first(),
         'gallery': gallery,
         'gallery_visible': GALLERY_VISIBLE,
         'gallery_hidden_count': max(len(gallery) - GALLERY_VISIBLE, 0),

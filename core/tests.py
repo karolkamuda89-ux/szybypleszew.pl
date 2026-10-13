@@ -41,9 +41,10 @@ class HomePageTests(TestCase):
         self.assertContains(response, 'mailto:szybypleszew@interia.pl')
         self.assertContains(response, 'mailto:autoszybypleszew@interia.pl')
 
-    def test_home_shows_visee_wipers(self):
+    def test_home_shows_visee_promo_from_migration(self):
         response = self.client.get(reverse('core:home'))
-        self.assertContains(response, 'id="wycieraczki"')
+        self.assertContains(response, 'id="nowosc"')
+        self.assertContains(response, 'Pióra wycieraczek VISEE z montażem od ręki')
 
 
 def make_image(name='zdjecie.jpg', size=(3000, 2000), fmt='JPEG'):
@@ -178,6 +179,43 @@ class GalleryDeleteTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(GalleryItem.objects.count(), 0)
         self.assertFalse(any(os.path.exists(p) for p in paths_a + paths_b))
+
+
+class PromoSectionTests(TestCase):
+    """Sekcja "Nowość": tresc z bazy, chowanie, przycisk i ograniczenia w panelu."""
+
+    def setUp(self):
+        from .models import PromoSection
+        self.promo = PromoSection.objects.get()  # utworzona przez migracje 0003
+
+    def test_edited_content_is_shown(self):
+        self.promo.title = 'Nowe dywaniki'
+        self.promo.bullets = 'Pierwsza zaleta\n\nDruga zaleta'  # pusta linia ma zostac pominieta
+        self.promo.save()
+        response = self.client.get(reverse('core:home'))
+        self.assertContains(response, 'Nowe dywaniki')
+        self.assertContains(response, '<li>Pierwsza zaleta</li><li>Druga zaleta</li>')
+
+    def test_hidden_section_is_not_rendered(self):
+        self.promo.is_published = False
+        self.promo.save()
+        self.assertNotContains(self.client.get(reverse('core:home')), 'id="nowosc"')
+
+    def test_button_calls_by_default_and_uses_custom_link(self):
+        response = self.client.get(reverse('core:home'))
+        self.assertContains(response, 'Zapytaj o pióra: 607 560 682')
+        self.promo.button_link = 'https://visee.pl'
+        self.promo.save()
+        response = self.client.get(reverse('core:home'))
+        self.assertContains(response, 'href="https://visee.pl" class="btn btn-cta btn-lg" target="_blank"')
+
+    def test_admin_opens_form_and_blocks_add_and_delete(self):
+        from django.contrib.auth.models import User
+        self.client.force_login(User.objects.create_superuser('admin', 'admin@example.com', 'haslo-testowe'))
+        response = self.client.get('/admin/core/promosection/')
+        self.assertRedirects(response, f'/admin/core/promosection/{self.promo.pk}/change/')
+        self.assertEqual(self.client.get('/admin/core/promosection/add/').status_code, 403)
+        self.assertEqual(self.client.get(f'/admin/core/promosection/{self.promo.pk}/delete/').status_code, 403)
 
 
 class BlogPageTests(TestCase):

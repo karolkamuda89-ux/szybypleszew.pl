@@ -5,7 +5,9 @@ from django.db.models import Max
 from django.urls import reverse
 from django.utils.html import format_html
 
-from .models import GalleryItem, GalleryPhoto
+from django.shortcuts import redirect
+
+from .models import GalleryItem, GalleryPhoto, PromoSection
 
 # Naglowki panelu zamiast domyslnego "Administracja Django"
 admin.site.site_header = 'Auto Szyby Pleszew – panel'
@@ -104,3 +106,34 @@ class GalleryItemAdmin(admin.ModelAdmin):
         last = form.instance.photos.aggregate(m=Max('order'))['m'] or 0
         for i, uploaded in enumerate(files, start=1):
             GalleryPhoto.objects.create(item=form.instance, image=uploaded, order=last + i * 10)
+
+
+@admin.register(PromoSection)
+class PromoSectionAdmin(admin.ModelAdmin):
+    """Sekcja "Nowość" – jeden wpis, wiec zamiast listy od razu otwiera sie formularz."""
+    fieldsets = [
+        (None, {'fields': ['is_published']}),
+        ('Treść', {'fields': ['label', 'title', 'text', 'bullets']}),
+        ('Przycisk', {'fields': ['button_text', 'button_link']}),
+        ('Zdjęcie', {'fields': ['podglad', 'image', 'image_alt', 'placeholder']}),
+    ]
+    readonly_fields = ['podglad']
+
+    @admin.display(description='Obecne zdjęcie')
+    def podglad(self, obj):
+        return preview(obj.image, 160) if obj.pk else '—'
+
+    def has_add_permission(self, request):
+        # Drugiej sekcji nie da sie dodac – jest tylko jedna (startowa tworzona w migracji)
+        return not PromoSection.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        # Zamiast usuwac, sekcje chowa sie odznaczajac "Pokazuj sekcje na stronie"
+        return False
+
+    def changelist_view(self, request, extra_context=None):
+        # Klikniecie "Sekcja Nowosc" w menu panelu otwiera od razu formularz edycji
+        promo = PromoSection.objects.first()
+        if promo:
+            return redirect('admin:core_promosection_change', promo.pk)
+        return redirect('admin:core_promosection_add')

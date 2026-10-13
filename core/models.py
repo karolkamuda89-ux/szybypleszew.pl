@@ -105,3 +105,62 @@ def delete_photo_files(sender, instance, **kwargs):
     for field in (instance.image, instance.thumbnail):
         if field:
             field.storage.delete(field.name)
+
+
+class PromoSection(models.Model):
+    """Sekcja "Nowość" na stronie glownej (obecnie: pióra wycieraczek VISEE).
+
+    W bazie jest tylko jeden taki wpis – w panelu od razu otwiera sie jego formularz.
+    """
+
+    is_published = models.BooleanField(
+        'Pokazuj sekcję na stronie', default=True,
+        help_text='Odznacz, żeby schować sekcję bez kasowania treści.')
+    label = models.CharField(
+        'Etykieta nad tytułem', max_length=60, default='Nowość',
+        help_text='Mały napis nad tytułem, np. „Nowość · pióra wycieraczek”.')
+    title = models.CharField('Tytuł', max_length=150)
+    text = models.TextField('Opis', help_text='Pusta linia zaczyna nowy akapit.')
+    bullets = models.TextField(
+        'Lista zalet', blank=True,
+        help_text='Każda zaleta w osobnej linii. Na stronie pojawi się jako lista z zielonymi ptaszkami.')
+    button_text = models.CharField(
+        'Tekst przycisku', max_length=60, blank=True, default='Zadzwoń',
+        help_text='Puste = bez przycisku. Gdy pole „Link przycisku” jest puste, przycisk dzwoni do firmy '
+                  'i dopisuje numer telefonu, np. „Zapytaj o pióra: 607 560 682”.')
+    button_link = models.CharField(
+        'Link przycisku', max_length=200, blank=True,
+        help_text='Opcjonalnie, np. https://visee.pl albo #kontakt. Puste = telefon do firmy.')
+    image = models.ImageField(
+        'Zdjęcie', upload_to='nowosc/', blank=True,
+        help_text='Dowolny format – zostanie zamienione na WebP i zmniejszone.')
+    image_alt = models.CharField(
+        'Opis zdjęcia (dla Google i czytników ekranu)', max_length=150, blank=True)
+    placeholder = models.CharField(
+        'Napis zamiast zdjęcia', max_length=30, blank=True, default='VISEE',
+        help_text='Wyświetla się na grafice zastępczej, dopóki nie ma zdjęcia.')
+
+    class Meta:
+        verbose_name = 'sekcja „Nowość”'
+        verbose_name_plural = 'Sekcja „Nowość”'
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def bullet_list(self):
+        """Lista zalet jako lista Pythona (puste linie pomijane)."""
+        return [line.strip() for line in self.bullets.splitlines() if line.strip()]
+
+    def save(self, *args, **kwargs):
+        old_image = None
+        if self.pk:
+            old_image = PromoSection.objects.filter(pk=self.pk).values_list('image', flat=True).first()
+        if self.image and not self.image._committed:
+            # Nowo wgrane zdjecie zapisujemy od razu jako WebP
+            stem = slugify(Path(self.image.name).stem) or 'nowosc'
+            self.image.save(f'{stem}.webp', to_webp(self.image.file, DUZE), save=False)
+        super().save(*args, **kwargs)
+        # Po podmianie lub usunieciu zdjecia kasujemy stary plik
+        if old_image and old_image != self.image.name:
+            self.image.storage.delete(old_image)
