@@ -52,7 +52,7 @@
     --shadow-sm: 0 2px 8px rgba(23, 24, 28, .06);
     --shadow: 0 12px 32px rgba(23, 24, 28, .12);
     --glow: 0 8px 22px rgba(168, 240, 0, .35);
-    --header-h: 88px;
+    --header-h: 96px;
 
     --font-head: 'Montserrat', system-ui, sans-serif;
     --font-body: 'Inter', system-ui, sans-serif;
@@ -188,7 +188,7 @@ img { max-width: 100%; display: block; }
 }
 
 .logo { display: inline-flex; align-items: center; flex-shrink: 0; }
-.logo img { height: 70px; width: auto; }
+.logo img { height: 80px; width: auto; }
 
 .main-nav {
     display: flex;
@@ -921,7 +921,7 @@ img { max-width: 100%; display: block; }
 @media (max-width: 600px) {
     :root { --header-h: 72px; }
     .container { padding: 0 16px; }
-    .logo img { height: 52px; }
+    .logo img { height: 58px; }
     .section { padding: 64px 0; }
     .cards,
     .cards-3,

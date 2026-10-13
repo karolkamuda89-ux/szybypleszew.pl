@@ -26,7 +26,7 @@
         "legalName": "{{ site_company }}",
         "description": "Sprzedaż i montaż szyb samochodowych, naprawa odprysków, dojazd do klienta w całej Wielkopolsce.",
         "url": "{{ request.scheme }}://{{ request.get_host }}/",
-        "logo": "{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo/logo-autoszyby.svg' %}",
+        "logo": "{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo/logo-autoszyby.png' %}",
         "telephone": "{{ site_phone_e164 }}",
         "email": "{{ site_email }}",
         "foundingDate": "{{ site_founded }}",
@@ -54,7 +54,8 @@
     <header class="site-header" id="top">
         <div class="container header-inner">
             <a href="{{ home_url }}" class="logo" aria-label="{{ site_name }} – strona główna">
-                <img src="{% static 'img/logo/logo-autoszyby.svg' %}" alt="{{ site_name }} – serwis mobilny" width="159" height="70">
+                {# Logo to oryginalna grafika klienta (bez tla) w ok. 4x wiekszej rozdzielczosci niz wyswietlana – ostra takze na ekranach retina #}
+                <img src="{% static 'img/logo/logo-autoszyby.webp' %}" alt="{{ site_name }} – serwis mobilny" width="181" height="80">
             </a>
 
             <button class="nav-toggle" type="button" aria-label="Otwórz menu" aria-expanded="false" aria-controls="main-nav">
@@ -89,7 +90,7 @@
         <div class="container footer-inner">
             <div>
                 <a href="{{ home_url }}" class="logo logo-footer">
-                    <img src="{% static 'img/logo/logo-autoszyby.svg' %}" alt="{{ site_name }}" width="218" height="96" loading="lazy">
+                    <img src="{% static 'img/logo/logo-autoszyby.webp' %}" alt="{{ site_name }}" width="217" height="96" loading="lazy">
                 </a>
                 <p class="footer-note">Sprzedaż i montaż szyb samochodowych w Pleszewie od {{ site_founded }} roku. Dojazd do klienta w całej Wielkopolsce.</p>
             </div>
