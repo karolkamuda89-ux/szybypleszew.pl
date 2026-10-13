@@ -46,29 +46,90 @@ class HomePageTests(TestCase):
         self.assertContains(response, 'id="wycieraczki"')
 
 
+def make_image(name='zdjecie.jpg', size=(3000, 2000), fmt='JPEG'):
+    """Tworzy w pamieci przykladowy obraz do wgrania (jak plik z telefonu)."""
+    from io import BytesIO
+    from PIL import Image
+    from django.core.files.uploadedfile import SimpleUploadedFile
+    buffer = BytesIO()
+    Image.new('RGB', size, (120, 180, 40)).save(buffer, fmt)
+    return SimpleUploadedFile(name, buffer.getvalue(), content_type='image/jpeg')
+
+
 class GalleryTests(TestCase):
-    """Galeria: kazde zdjecie z core/gallery.py ma pliki w media/ i trafia na strone."""
+    """Galeria w bazie: konwersja zdjec, wyswietlanie na stronie i panel admina."""
 
-    def test_gallery_files_exist(self):
-        from pathlib import Path
-        from django.conf import settings
-        from .gallery import GALLERY, PHOTO_ABOUT, PHOTO_HERO
-        media = Path(settings.MEDIA_ROOT)
-        # media/ nie jest w repozytorium (.gitignore) – na swiezej kopii bez zdjec pomijamy test
-        if not (media / 'galeria').exists():
-            self.skipTest('brak folderu media/galeria (zdjecia nie sa w repozytorium)')
-        for foto in GALLERY:
-            self.assertTrue((media / 'galeria' / f"{foto['plik']}.webp").exists(), foto['plik'])
-            self.assertTrue((media / 'galeria' / 'min' / f"{foto['plik']}.webp").exists(), foto['plik'])
-        self.assertTrue((media / PHOTO_HERO).exists())
-        self.assertTrue((media / PHOTO_ABOUT).exists())
+    def setUp(self):
+        # Pliki testowe trafiaja do tymczasowego folderu, nie do prawdziwego media/
+        import tempfile
+        self.media = tempfile.mkdtemp()
+        self.override = override_settings(MEDIA_ROOT=self.media)
+        self.override.enable()
 
-    def test_home_shows_gallery_and_hides_extra_photos(self):
-        from .gallery import GALLERY, GALLERY_VISIBLE
+    def tearDown(self):
+        import shutil
+        self.override.disable()
+        shutil.rmtree(self.media, ignore_errors=True)
+
+    def test_uploaded_photo_is_converted_to_webp_with_thumbnail(self):
+        from PIL import Image
+        from .models import GalleryItem, GalleryPhoto
+        item = GalleryItem.objects.create(title='BMW – wymiana szyby')
+        photo = GalleryPhoto.objects.create(item=item, image=make_image('Moje Zdjęcie.JPG'))
+        self.assertTrue(photo.image.name.endswith('.webp'))
+        self.assertTrue(photo.thumbnail.name.startswith('galeria/min/'))
+        with Image.open(photo.image.path) as big, Image.open(photo.thumbnail.path) as small:
+            self.assertEqual(big.format, 'WEBP')
+            self.assertEqual(max(big.size), 1920)
+            self.assertEqual(max(small.size), 800)
+
+    def test_replacing_and_deleting_photo_removes_old_files(self):
+        import os
+        from .models import GalleryItem, GalleryPhoto
+        item = GalleryItem.objects.create(title='Audi')
+        photo = GalleryPhoto.objects.create(item=item, image=make_image('a.jpg'))
+        old_paths = [photo.image.path, photo.thumbnail.path]
+        photo.image = make_image('b.jpg')
+        photo.save()
+        self.assertFalse(any(os.path.exists(p) for p in old_paths))
+        new_paths = [photo.image.path, photo.thumbnail.path]
+        photo.delete()
+        self.assertFalse(any(os.path.exists(p) for p in new_paths))
+
+    def test_home_shows_items_with_multiple_photos(self):
+        from .models import GalleryItem, GalleryPhoto
+        item = GalleryItem.objects.create(title='Tesla – wymiana szyby')
+        GalleryPhoto.objects.create(item=item, image=make_image('1.jpg'), caption='Demontaż', order=1)
+        GalleryPhoto.objects.create(item=item, image=make_image('2.jpg'), caption='Montaż', order=2)
+        GalleryItem.objects.create(title='Bez zdjęć')                       # pusta – pomijana
+        GalleryItem.objects.create(title='Ukryta', is_published=False)      # niewidoczna
         response = self.client.get(reverse('core:home'))
-        self.assertContains(response, 'class="gallery-link"', count=len(GALLERY))
-        self.assertContains(response, ' hidden>', count=len(GALLERY) - GALLERY_VISIBLE)
-        self.assertContains(response, 'id="gallery-more"')
+        self.assertContains(response, 'Tesla – wymiana szyby')
+        self.assertContains(response, 'class="gallery-link', count=2)
+        self.assertContains(response, '1 / 2')
+        self.assertNotContains(response, 'Bez zdjęć')
+        self.assertNotContains(response, 'Ukryta')
+
+    def test_admin_can_add_item_with_several_photos_at_once(self):
+        from django.contrib.auth.models import User
+        from .models import GalleryItem
+        admin_user = User.objects.create_superuser('admin', 'admin@example.com', 'haslo-testowe')
+        self.client.force_login(admin_user)
+        self.assertEqual(self.client.get('/admin/core/galleryitem/').status_code, 200)
+        response = self.client.post('/admin/core/galleryitem/add/', {
+            'title': 'Mercedes – cały proces',
+            'shape': 'szerokie',
+            'order': 5,
+            'is_published': 'on',
+            'new_photos': [make_image('1.jpg'), make_image('2.jpg'), make_image('3.jpg')],
+            # pusty formularz zdjec pod spodem (inline)
+            'photos-TOTAL_FORMS': '0', 'photos-INITIAL_FORMS': '0',
+            'photos-MIN_NUM_FORMS': '0', 'photos-MAX_NUM_FORMS': '1000',
+        })
+        self.assertEqual(response.status_code, 302, getattr(response, 'context', None) and response.context['adminform'].form.errors)
+        item = GalleryItem.objects.get(title='Mercedes – cały proces')
+        self.assertEqual(item.photos.count(), 3)
+        self.assertEqual(self.client.get(f'/admin/core/galleryitem/{item.pk}/change/').status_code, 200)
 
 
 class BlogPageTests(TestCase):

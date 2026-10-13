@@ -173,9 +173,11 @@
 
 <!-- GALERIA -->
 {% comment %}
-  Zdjecia i podpisy sa w core/gallery.py. Kafelki pokazuja miniatury (media/galeria/min/),
-  klikniecie otwiera duze zdjecie w powiekszeniu (lightbox w main.js; bez JS link otwiera plik).
-  Zdjecia ponad gallery_visible sa ukryte do klikniecia "Pokaz wiecej zdjec".
+  Realizacje i zdjecia dodaje sie w panelu admina (/admin/ -> Galeria – realizacje).
+  Kafelek pokazuje miniatury (thumbnail); gdy realizacja ma kilka zdjec, pojawiaja sie strzalki
+  i licznik, a pod tytulem opis biezacego etapu. Klikniecie otwiera duze zdjecia tej realizacji
+  w powiekszeniu (lightbox w main.js; bez JS link otwiera plik).
+  Realizacje ponad gallery_visible sa ukryte do klikniecia "Pokaz wiecej zdjec".
 {% endcomment %}
 <section class="section section-tint" id="galeria">
     <div class="container">
@@ -185,18 +187,34 @@
             <p>Od aut miejskich, przez sportowe i terenowe, po ciężarówki – tak wygląda nasza codzienna praca.</p>
         </div>
         <div class="gallery" id="gallery">
-            {% for foto in gallery %}
-            <figure class="gallery-item gallery-item-{{ foto.ksztalt }}"{% if forloop.counter > gallery_visible %} hidden{% endif %}>
-                <a href="{{ MEDIA_URL }}galeria/{{ foto.plik }}.webp" class="gallery-link" data-caption="{{ foto.podpis }}">
-                    <img src="{{ MEDIA_URL }}galeria/min/{{ foto.plik }}.webp" alt="{{ foto.podpis }}" loading="lazy" decoding="async">
-                </a>
-                <figcaption>{{ foto.podpis }}</figcaption>
+            {% for item in gallery %}
+            {% with photos=item.photos.all %}
+            <figure class="gallery-item gallery-item-{{ item.shape }}" data-title="{{ item.title }}"{% if forloop.counter > gallery_visible %} hidden{% endif %}>
+                <div class="gallery-slides">
+                    {% for photo in photos %}
+                    <a href="{{ photo.image.url }}" class="gallery-link{% if forloop.first %} is-active{% endif %}" data-caption="{{ photo.caption }}">
+                        <img src="{{ photo.thumbnail.url|default:photo.image.url }}" alt="{{ item.title }}{% if photo.caption %} – {{ photo.caption }}{% endif %}" loading="lazy" decoding="async">
+                    </a>
+                    {% endfor %}
+                </div>
+                {% if photos|length > 1 %}
+                <button type="button" class="gallery-nav gallery-prev" aria-label="Poprzednie zdjęcie">&#8249;</button>
+                <button type="button" class="gallery-nav gallery-next" aria-label="Następne zdjęcie">&#8250;</button>
+                <span class="gallery-counter" aria-live="polite">1 / {{ photos|length }}</span>
+                {% endif %}
+                <figcaption>
+                    {{ item.title }}
+                    <span class="gallery-step"{% if not photos.0.caption %} hidden{% endif %}>{{ photos.0.caption }}</span>
+                </figcaption>
             </figure>
+            {% endwith %}
+            {% empty %}
+            <p class="gallery-empty">Wkrótce pokażemy tu nasze realizacje.</p>
             {% endfor %}
         </div>
         {% if gallery_hidden_count %}
         <div class="gallery-more">
-            <button type="button" class="btn btn-ghost" id="gallery-more">Pokaż więcej zdjęć ({{ gallery_hidden_count }})</button>
+            <button type="button" class="btn btn-ghost" id="gallery-more">Pokaż więcej realizacji ({{ gallery_hidden_count }})</button>
         </div>
         {% endif %}
     </div>

@@ -27,3 +27,19 @@ python scripts/webp.py static/img --usun       # usuń oryginały po konwersji
 ```
 
 Pełna lista opcji: `python scripts/webp.py --help`.
+
+## Panel admina i galeria
+
+Galerię realizacji edytuje się w panelu: `http://localhost:8000/admin/` → **Galeria – realizacje**.
+
+- Jedna realizacja = jeden kafelek (opis, rozmiar kafelka, kolejność, widoczność).
+- Do realizacji można dodać kilka zdjęć naraz (pole „Dodaj zdjęcia”). Na stronie przewija się je strzałkami.
+- Wgrane zdjęcia są automatycznie zamieniane na WebP (duże 1920 px + miniatura 800 px).
+
+Pierwsze uruchomienie:
+
+```bash
+python manage.py migrate
+python manage.py createsuperuser      # konto do logowania w panelu
+python manage.py import_gallery       # wczytanie startowej galerii z core/gallery.py
+```

@@ -1,14 +1,12 @@
-"""Zdjecia na stronie: galeria realizacji i zdjecia firmy.
+"""Zdjecia na stronie: poczatkowa lista galerii i zdjecia firmy.
 
-Pliki WebP leza w media/ w dwoch rozmiarach:
-  media/galeria/<plik>.webp      – duze (max 1920 px), otwierane po kliknieciu w powiekszeniu
-  media/galeria/min/<plik>.webp  – miniatury (max 800 px) do kafelkow
-Zeby dodac zdjecie: wrzuc plik do obu folderow (np. skryptem scripts/webp.py) i dopisz wpis ponizej.
+UWAGA: galerie edytuje sie teraz w panelu admina (/admin/ -> Galeria – realizacje).
+Lista GALLERY ponizej sluzy tylko do jednorazowego importu do bazy:
+    python manage.py import_gallery
+Zmiany w tej liscie po imporcie NIE zmieniaja strony.
 
-Pole "ksztalt" ustawia rozmiar kafelka w siatce galerii:
-  'poziome' – zwykly kafelek, 'pionowe' – wysoki (2 rzedy), 'szerokie' – szeroki (2 kolumny)
-Siatka ma 4 kolumny, wiec zeby nie bylo dziur, suma pol (poziome = 1, pionowe/szerokie = 2)
-w pierwszych GALLERY_VISIBLE zdjeciach i w calej liscie powinna byc wielokrotnoscia 4.
+Pliki z importu leza w media/galeria/ (duze, max 1920 px) i media/galeria/min/ (miniatury, max 800 px).
+Zdjecia dodane w panelu trafiaja do tych samych folderow i sa konwertowane automatycznie.
 """
 
 # Kolejnosc ma znaczenie: pierwsze GALLERY_VISIBLE zdjec widac od razu, reszta po kliknieciu "Pokaz wiecej".
@@ -41,7 +39,7 @@ GALLERY = [
     {'plik': 'biuro', 'podpis': 'Nasze biuro w Pleszewie', 'ksztalt': 'szerokie'},
 ]
 
-# Ile zdjec widac od razu (reszta jest schowana pod przyciskiem)
+# Ile realizacji widac od razu (reszta jest schowana pod przyciskiem "Pokaz wiecej")
 GALLERY_VISIBLE = 12
 
 # Zdjecia uzyte w innych miejscach strony (folder media/firma/)

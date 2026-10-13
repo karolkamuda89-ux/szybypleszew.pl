@@ -61,14 +61,62 @@
 })();
 
 /*
- * Galeria: przycisk "Pokaż więcej zdjęć" i powiększanie zdjęć (lightbox).
+ * Galeria realizacji:
+ *  - kafelki z kilkoma zdjęciami: strzałki ‹ ›, licznik "2 / 5" i przesuwanie palcem,
+ *  - przycisk "Pokaż więcej realizacji",
+ *  - powiększenie (lightbox) ze zdjęciami klikniętej realizacji.
  * Osobna funkcja, bo powyższa kończy działanie na podstronach bez sekcji (return).
  */
 (function () {
     var gallery = document.getElementById('gallery');
     if (!gallery) return;  // galerii nie ma na tej stronie (np. blog)
 
-    // --- "Pokaż więcej zdjęć": odkrywa zdjęcia z atrybutem hidden -----------
+    // --- Przewijanie zdjęć w kafelku --------------------------------------
+    // Zdjęcia kafelka leżą jedno na drugim; widoczne jest to z klasą is-active.
+    function setSlide(tile, index) {
+        var slides = tile.querySelectorAll('.gallery-link');
+        var count = slides.length;
+        index = (index + count) % count;  // zapętlenie: za ostatnim jest pierwsze
+        slides.forEach(function (slide, i) { slide.classList.toggle('is-active', i === index); });
+        tile.dataset.index = index;
+
+        var counter = tile.querySelector('.gallery-counter');
+        if (counter) counter.textContent = (index + 1) + ' / ' + count;
+
+        // Opis etapu (np. "Demontaż starej szyby") pod tytułem kafelka
+        var step = tile.querySelector('.gallery-step');
+        var text = slides[index].dataset.caption;
+        step.textContent = text;
+        step.hidden = !text;
+    }
+
+    function currentSlide(tile) { return parseInt(tile.dataset.index || '0', 10); }
+
+    gallery.addEventListener('click', function (e) {
+        var nav = e.target.closest('.gallery-nav');
+        if (!nav) return;
+        var tile = nav.closest('.gallery-item');
+        setSlide(tile, currentSlide(tile) + (nav.classList.contains('gallery-next') ? 1 : -1));
+    });
+
+    // Przesuwanie palcem na telefonie: ruch w poziomie o min. 40 px zmienia zdjęcie
+    var touchX = null;
+    var swiped = false;
+    gallery.addEventListener('touchstart', function (e) {
+        touchX = e.touches[0].clientX;
+        swiped = false;
+    }, { passive: true });
+    gallery.addEventListener('touchend', function (e) {
+        if (touchX === null) return;
+        var tile = e.target.closest('.gallery-item');
+        var dx = e.changedTouches[0].clientX - touchX;
+        touchX = null;
+        if (!tile || tile.querySelectorAll('.gallery-link').length < 2 || Math.abs(dx) < 40) return;
+        swiped = true;  // żeby przesunięcie nie zostało potraktowane jak kliknięcie (otwarcie powiększenia)
+        setSlide(tile, currentSlide(tile) + (dx < 0 ? 1 : -1));
+    });
+
+    // --- "Pokaż więcej realizacji": odkrywa kafelki z atrybutem hidden ------
     var moreBtn = document.getElementById('gallery-more');
     if (moreBtn) {
         moreBtn.addEventListener('click', function () {
@@ -79,37 +127,41 @@
         });
     }
 
-    // --- Lightbox -----------------------------------------------------------
+    // --- Lightbox: powiększenie zdjęć jednej realizacji ---------------------
     var dialog = document.getElementById('lightbox');
     // Bez obsługi <dialog> (bardzo stare przeglądarki) linki po prostu otworzą zdjęcie w karcie
     if (!dialog || typeof dialog.showModal !== 'function') return;
 
     var img = dialog.querySelector('img');
     var caption = dialog.querySelector('figcaption');
+    var navButtons = dialog.querySelectorAll('.lightbox-nav');
+    var openTile = null;   // kafelek, którego zdjęcia oglądamy
     var current = 0;
 
-    // Lista widocznych zdjęć liczona za każdym razem, bo "Pokaż więcej" dokłada nowe
-    function visibleLinks() {
-        return Array.prototype.filter.call(gallery.querySelectorAll('.gallery-link'), function (a) {
-            return !a.closest('.gallery-item').hidden;
-        });
-    }
-
     function show(index) {
-        var links = visibleLinks();
-        // Zapętlenie: za ostatnim zdjęciem jest pierwsze i odwrotnie
-        current = (index + links.length) % links.length;
-        var link = links[current];
-        img.src = link.href;
-        img.alt = link.dataset.caption;
-        caption.textContent = link.dataset.caption;
+        var slides = openTile.querySelectorAll('.gallery-link');
+        current = (index + slides.length) % slides.length;
+        var slide = slides[current];
+        img.src = slide.href;
+        // Podpis: tytuł realizacji + opis etapu + numer zdjęcia, jeśli jest ich kilka
+        var parts = [openTile.dataset.title];
+        if (slide.dataset.caption) parts.push(slide.dataset.caption);
+        if (slides.length > 1) parts.push((current + 1) + ' / ' + slides.length);
+        caption.textContent = parts.join(' · ');
+        img.alt = parts.slice(0, 2).join(' – ');
+        // Kafelek przewija się razem z powiększeniem, więc po zamknięciu widać ostatnie oglądane zdjęcie
+        setSlide(openTile, current);
     }
 
     gallery.addEventListener('click', function (e) {
         var link = e.target.closest('.gallery-link');
         if (!link) return;
         e.preventDefault();  // zamiast otwierać plik, pokazujemy go w oknie
-        show(visibleLinks().indexOf(link));
+        if (swiped) { swiped = false; return; }
+        openTile = link.closest('.gallery-item');
+        var many = openTile.querySelectorAll('.gallery-link').length > 1;
+        navButtons.forEach(function (b) { b.hidden = !many; });  // strzałki tylko przy kilku zdjęciach
+        show(currentSlide(openTile));
         dialog.showModal();
     });
 
@@ -124,6 +176,7 @@
 
     // Strzałki na klawiaturze przełączają zdjęcia (Esc zamyka okno sam <dialog>)
     dialog.addEventListener('keydown', function (e) {
+        if (navButtons[0].hidden) return;
         if (e.key === 'ArrowLeft') show(current - 1);
         if (e.key === 'ArrowRight') show(current + 1);
     });
