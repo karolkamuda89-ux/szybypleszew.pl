@@ -201,7 +201,7 @@
         <div class="gallery" id="gallery">
             {% for item in gallery %}
             {% with photos=item.photos.all %}
-            <figure class="gallery-item gallery-item-{{ item.shape }}" data-title="{{ item.title }}"{% if forloop.counter > gallery_visible %} hidden{% endif %}>
+            <figure class="gallery-item gallery-item-{{ item.shape }}{% if forloop.counter > gallery_visible %} is-extra{% endif %}" data-title="{{ item.title }}"{% if forloop.counter > gallery_visible %} hidden{% endif %}>
                 <div class="gallery-slides">
                     {% for photo in photos %}
                     <a href="{{ photo.image.url }}" class="gallery-link{% if forloop.first %} is-active{% endif %}" data-caption="{{ photo.caption }}">
@@ -226,7 +226,9 @@
         </div>
         {% if gallery_hidden_count %}
         <div class="gallery-more">
-            <button type="button" class="btn btn-ghost" id="gallery-more">Pokaż więcej realizacji ({{ gallery_hidden_count }})</button>
+            {# Ten sam przycisk rozwija i zwija galerie; teksty obu stanow sa w data-* (przelacza main.js) #}
+            <button type="button" class="btn btn-ghost" id="gallery-more" aria-expanded="false"
+                    data-more="Pokaż więcej realizacji ({{ gallery_hidden_count }})" data-less="Pokaż mniej">Pokaż więcej realizacji ({{ gallery_hidden_count }})</button>
         </div>
         {% endif %}
     </div>

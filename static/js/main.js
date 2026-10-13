@@ -116,14 +116,22 @@
         setSlide(tile, currentSlide(tile) + (dx < 0 ? 1 : -1));
     });
 
-    // --- "Pokaż więcej realizacji": odkrywa kafelki z atrybutem hidden ------
+    // --- "Pokaż więcej realizacji" / "Pokaż mniej" ----------------------------
+    // Kafelki ponad limit mają klasę is-extra; przycisk na zmianę je pokazuje i chowa.
     var moreBtn = document.getElementById('gallery-more');
     if (moreBtn) {
         moreBtn.addEventListener('click', function () {
-            gallery.querySelectorAll('.gallery-item[hidden]').forEach(function (item) {
-                item.hidden = false;
+            var expand = moreBtn.getAttribute('aria-expanded') !== 'true';
+            gallery.querySelectorAll('.gallery-item.is-extra').forEach(function (item) {
+                item.hidden = !expand;
             });
-            moreBtn.parentElement.remove();  // przycisk nie jest już potrzebny
+            moreBtn.setAttribute('aria-expanded', String(expand));
+            moreBtn.textContent = expand ? moreBtn.dataset.less : moreBtn.dataset.more;
+            // Po zwinięciu strona robi się dużo krótsza – wracamy do początku galerii,
+            // żeby użytkownik nie wylądował nagle w innej sekcji
+            if (!expand) {
+                document.getElementById('galeria').scrollIntoView({ behavior: 'smooth' });
+            }
         });
     }
 
