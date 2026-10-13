@@ -321,7 +321,7 @@ class SeoTests(TestCase):
         self.assertContains(response, '<link rel="canonical" href="http://testserver/">')  # bez parametrow z adresu
         self.assertContains(response, 'property="og:image" content="http://testserver/static/img/og-image.jpg"')
         self.assertContains(response, '"geo": {"@type": "GeoCoordinates"')
-        self.assertContains(response, 'w Pleszewie</span></h1>')
+        self.assertContains(response, 'w&nbsp;Pleszewie</span></h1>')
 
     def test_structured_data_is_valid_json(self):
         import json
@@ -342,6 +342,15 @@ class SeoTests(TestCase):
     def test_favicon_redirect(self):
         response = self.client.get('/favicon.ico')
         self.assertRedirects(response, '/static/img/favicon/favicon.ico', status_code=301, fetch_redirect_response=False)
+
+    def test_no_template_comments_leak_into_html(self):
+        # {# ... #} dziala tylko w jednej linii – rozpisany na kilka linii trafilby na strone jako tekst
+        for url in [reverse('core:home'), reverse('core:blog'), reverse('core:privacy'),
+                    '/blog/odprysk-na-szybie-naprawic-czy-wymienic/']:
+            html = self.client.get(url).content.decode()
+            self.assertNotIn('{#', html, url)
+            self.assertNotIn('#}', html, url)
+            self.assertNotIn('{%', html, url)
 
     def test_404_page_is_styled_and_noindex(self):
         response = self.client.get('/nie-ma-takiej-strony/')

@@ -10,8 +10,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {# --- SEO: tytul i opis (to, co Google pokazuje w wynikach wyszukiwania) ---
-       Tytul do ok. 60 znakow, opis do ok. 155 znakow; podstrony nadpisuja oba bloki. #}
+    {# --- SEO: tytul i opis (to, co Google pokazuje w wynikach wyszukiwania) --- #}
+    {# Tytul do ok. 60 znakow, opis do ok. 155 znakow; podstrony nadpisuja oba bloki. #}
     <title>{% block title %}Auto Szyby Pleszew – wymiana szyb samochodowych i naprawa odprysków{% endblock %}</title>
     <meta name="description" content="{% block description %}Wymiana szyb samochodowych i naprawa odprysków w Pleszewie od {{ site_founded }} r. Auta osobowe, dostawcze i ciężarowe. Dojazd w całej Wielkopolsce. Tel. {{ site_phone }}{% endblock %}">
     {# Adres kanoniczny: jeden "oficjalny" adres strony – chroni przed duplikatami (np. z parametrami w adresie) #}
@@ -43,8 +43,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,800;1,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
-    {# Dane strukturalne dla Google (schema.org): firma, adres, telefon, godziny, polozenie na mapie,
-       profile w sieci – pomagaja w wynikach lokalnych ("szyby samochodowe Pleszew") i w Mapach Google #}
+    {# Dane strukturalne dla Google (schema.org): firma, adres, telefon, godziny, polozenie na mapie, #}
+    {# profile w sieci – pomagaja w wynikach lokalnych ("szyby samochodowe Pleszew") i w Mapach Google #}
     {% block structured_data %}
     <script type="application/ld+json">
     {
