@@ -354,13 +354,19 @@ img { max-width: 100%; display: block; }
     grid-template-columns: repeat(4, 1fr);
     gap: 22px;
 }
+/* Kafelek usługi z limonkową ramką (kolor z logo); po najechaniu ramka się rozjaśnia i lekko świeci */
 .service {
     display: flex;
     flex-direction: column;
     background: #fff;
-    border: 1px solid var(--graphite-100);
+    border: 2px solid var(--lime-400);
     border-radius: var(--radius-lg);
     overflow: hidden;
+    transition: border-color .2s, box-shadow .2s;
+}
+.service:hover {
+    border-color: var(--lime-300);
+    box-shadow: 0 0 0 4px rgba(168, 240, 0, .18), var(--shadow-sm);
 }
 .service img {
     width: 100%;
