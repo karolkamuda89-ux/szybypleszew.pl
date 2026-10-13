@@ -257,6 +257,8 @@ img { max-width: 100%; display: block; }
     padding: 88px 0 104px;
     color: var(--graphite-300);
     background:
+        /* limonkowa poświata z lewej (lustrzane odbicie poświaty z sekcji Kontakt) */
+        radial-gradient(circle at 8% 15%, rgba(168, 240, 0, .14) 0, transparent 40%),
         radial-gradient(ellipse at 50% 0%, #434b55 0, transparent 60%),
         linear-gradient(180deg, var(--graphite-800), var(--graphite-950));
 }
