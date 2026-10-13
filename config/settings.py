@@ -125,7 +125,7 @@ MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Dane firmy wyswietlane w szablonach (header, kontakt, stopka)
-SITE_NAME = 'Szyby Pleszew'
+SITE_NAME = 'Auto Szyby Pleszew'
 SITE_PHONE = '+48 600 000 000'
 SITE_EMAIL = 'kontakt@szybypleszew.pl'
 SITE_ADDRESS = 'ul. Przykładowa 1, 63-300 Pleszew'

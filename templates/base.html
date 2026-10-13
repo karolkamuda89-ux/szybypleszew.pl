@@ -5,10 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ site_name }} – wymiana i naprawa szyb{% endblock %}</title>
-    <meta name="description" content="{% block description %}{{ site_name }} – wymiana i naprawa szyb samochodowych oraz szklenie na wymiar w Pleszewie.{% endblock %}">
+    <meta name="description" content="{% block description %}{{ site_name }} – mobilny serwis szyb samochodowych. Wymiana i naprawa szyb w Pleszewie i okolicach.{% endblock %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,800;1,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body class="{% block body_class %}{% endblock %}">
@@ -16,8 +16,7 @@
     <header class="site-header" id="top">
         <div class="container header-inner">
             <a href="{{ home_url }}" class="logo" aria-label="{{ site_name }} – strona główna">
-                <span class="logo-mark" aria-hidden="true"></span>
-                <span class="logo-text">Szyby<strong>Pleszew</strong></span>
+                <img src="{% static 'img/logo/logo-autoszyby.svg' %}" alt="{{ site_name }} – serwis mobilny" width="159" height="70">
             </a>
 
             <button class="nav-toggle" type="button" aria-label="Otwórz menu" aria-expanded="false" aria-controls="main-nav">
@@ -49,10 +48,9 @@
         <div class="container footer-inner">
             <div>
                 <a href="{{ home_url }}" class="logo logo-footer">
-                    <span class="logo-mark" aria-hidden="true"></span>
-                    <span class="logo-text">Szyby<strong>Pleszew</strong></span>
+                    <img src="{% static 'img/logo/logo-autoszyby.svg' %}" alt="{{ site_name }}" width="218" height="96" loading="lazy">
                 </a>
-                <p class="footer-note">Wymiana i naprawa szyb – szybko, solidnie, na miejscu w Pleszewie.</p>
+                <p class="footer-note">Mobilny serwis szyb samochodowych – przyjedziemy do Ciebie w Pleszewie i okolicach.</p>
             </div>
             <div>
                 <h3>Kontakt</h3>
