@@ -9,6 +9,7 @@ app_name = 'core'
 urlpatterns = [
     # Strona glowna w stylu one page (oferta, o nas, galeria, kontakt, opinie)
     path('', views.home, name='home'),
-    # Blog jako osobna podstrona
+    # Blog: lista wpisow i pojedynczy wpis (osobne szablony)
     path('blog/', views.blog, name='blog'),
+    path('blog/<slug:slug>/', views.blog_post, name='blog_post'),
 ]

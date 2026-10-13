@@ -9,13 +9,16 @@ import logging
 from django.conf import settings
 from django.contrib import messages
 from django.core.mail import send_mail
+from django.core.paginator import Paginator
 from django.db.models import Prefetch
-from django.shortcuts import redirect, render
+from django.http import Http404
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 
 from .forms import ContactForm
 from .gallery import GALLERY_VISIBLE, PHOTO_ABOUT, PHOTO_HERO
 from .google_reviews import get_google_reviews
-from .models import GalleryItem, GalleryPhoto, PromoSection
+from .models import GalleryItem, GalleryPhoto, Post, PromoSection
 
 logger = logging.getLogger(__name__)
 
@@ -77,6 +80,25 @@ def home(request):
     })
 
 
+POSTS_PER_PAGE = 9
+
+
+def live_posts():
+    """Wpisy widoczne dla odwiedzajacych: opublikowane i z data publikacji, ktora juz minela."""
+    return Post.objects.filter(is_published=True, published_at__lte=timezone.now())
+
+
 def blog(request):
-    """Podstrona bloga (na razie z zapowiedziami wpisow)."""
-    return render(request, 'core/blog.html')
+    """Lista wpisow na blogu, po 9 na strone (?strona=2 itd.)."""
+    page = Paginator(live_posts(), POSTS_PER_PAGE).get_page(request.GET.get('strona'))
+    return render(request, 'core/blog.html', {'page': page})
+
+
+def blog_post(request, slug):
+    """Pojedynczy wpis. Szkice i wpisy zaplanowane widzi tylko zalogowany admin (podglad przed publikacja)."""
+    post = get_object_or_404(Post, slug=slug)
+    if not post.is_live and not request.user.is_staff:
+        raise Http404
+    # "Przeczytaj tez" – 3 najnowsze inne wpisy
+    others = live_posts().exclude(pk=post.pk)[:3]
+    return render(request, 'core/blog_post.html', {'post': post, 'others': others})

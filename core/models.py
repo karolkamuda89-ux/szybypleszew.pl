@@ -9,6 +9,8 @@ from pathlib import Path
 from django.db import models
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
+from django.urls import reverse
+from django.utils import timezone
 from django.utils.text import slugify
 
 from .images import DUZE, MINIATURA, to_webp
@@ -185,3 +187,88 @@ class ContactMessage(models.Model):
 
     def __str__(self):
         return f'{self.name} ({self.phone}) – {self.created_at:%d.%m.%Y %H:%M}'
+
+
+class Post(models.Model):
+    """Wpis na blogu. Lista: /blog/, pojedynczy wpis: /blog/<slug>/ (szablon core/blog_post.html)."""
+
+    title = models.CharField('Tytuł', max_length=200)
+    slug = models.SlugField(
+        'Adres wpisu', max_length=200, unique=True,
+        help_text='Końcówka adresu strony, np. „odprysk-naprawic-czy-wymienic”. Uzupełnia się sama z tytułu.')
+    excerpt = models.TextField(
+        'Krótki wstęp', max_length=400,
+        help_text='1–2 zdania widoczne na liście wpisów i w wynikach Google.')
+    content = models.TextField(
+        'Treść',
+        help_text='Pusta linia = nowy akapit. Linia zaczynająca się od „## ” = śródtytuł, „### ” = mniejszy śródtytuł, '
+                  '„- ” = punkt listy. **tekst** = pogrubienie, [tekst](https://adres) = link.')
+    cover = models.ImageField(
+        'Zdjęcie główne', upload_to='blog/', blank=True,
+        help_text='Dowolny format – zostanie zamienione na WebP i zmniejszone.')
+    cover_thumbnail = models.ImageField('Miniatura', upload_to='blog/min/', blank=True, editable=False)
+    cover_alt = models.CharField('Opis zdjęcia (dla Google i czytników ekranu)', max_length=150, blank=True)
+    published_at = models.DateTimeField(
+        'Data publikacji', default=timezone.now,
+        help_text='Wpis z datą w przyszłości pojawi się na stronie automatycznie tego dnia.')
+    is_published = models.BooleanField(
+        'Opublikowany', default=True,
+        help_text='Odznacz, żeby zapisać wpis jako szkic (niewidoczny dla odwiedzających).')
+    created_at = models.DateTimeField('Utworzono', auto_now_add=True)
+    updated_at = models.DateTimeField('Zmieniono', auto_now=True)
+
+    class Meta:
+        ordering = ['-published_at']
+        verbose_name = 'wpis'
+        verbose_name_plural = 'Blog – wpisy'
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        # Uzywane m.in. przez przycisk "Pokaż na stronie" w panelu admina
+        return reverse('core:blog_post', args=[self.slug])
+
+    @property
+    def is_live(self):
+        """Czy wpis widza odwiedzajacy (opublikowany i data publikacji juz minela)."""
+        return self.is_published and self.published_at <= timezone.now()
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slug(Post, self.title, self.pk)
+        old = None
+        if self.pk:
+            old = Post.objects.filter(pk=self.pk).values('cover', 'cover_thumbnail').first()
+        if self.cover and not self.cover._committed:
+            # Nowo wgrane zdjecie: WebP duze (do wpisu) + miniatura (do listy wpisow)
+            stem = slugify(Path(self.cover.name).stem) or 'wpis'
+            source = self.cover.file
+            full, thumb = to_webp(source, DUZE), to_webp(source, MINIATURA)
+            self.cover.save(f'{stem}.webp', full, save=False)
+            self.cover_thumbnail.save(f'{stem}.webp', thumb, save=False)
+        elif not self.cover:
+            self.cover_thumbnail = None
+        super().save(*args, **kwargs)
+        if old:
+            for field in ('cover', 'cover_thumbnail'):
+                current = getattr(self, field)
+                if old[field] and old[field] != (current.name if current else ''):
+                    current.storage.delete(old[field])
+
+
+def unique_slug(model, text, pk=None):
+    """Tworzy unikalny adres z tytulu: "Odprysk – naprawić?" -> "odprysk-naprawic" (-2, -3... przy powtorce)."""
+    base = slugify(text.replace('ł', 'l').replace('Ł', 'L'))[:180] or 'wpis'
+    slug, n = base, 2
+    while model.objects.filter(slug=slug).exclude(pk=pk).exists():
+        slug, n = f'{base}-{n}', n + 1
+    return slug
+
+
+@receiver(post_delete, sender=Post)
+def delete_post_files(sender, instance, **kwargs):
+    """Po usunieciu wpisu kasujemy jego zdjecia z dysku."""
+    for field in (instance.cover, instance.cover_thumbnail):
+        if field:
+            field.storage.delete(field.name)

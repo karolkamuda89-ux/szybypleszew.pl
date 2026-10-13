@@ -46,6 +46,8 @@
     }
     </script>
     {% endblock %}
+    {# Dodatkowe znaczniki w <head> dla konkretnej podstrony (np. dane wpisu na blogu dla Google i Facebooka) #}
+    {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">
     {# Adres strony glownej zapisany w zmiennej – linki w menu prowadza do sekcji na stronie glownej (np. /#oferta) takze z bloga #}
@@ -70,7 +72,7 @@
                     <li><a href="{{ home_url }}#galeria" data-section="galeria">Galeria</a></li>
                     <li><a href="{{ home_url }}#kontakt" data-section="kontakt">Kontakt</a></li>
                     <li><a href="{{ home_url }}#opinie" data-section="opinie">Opinie</a></li>
-                    <li><a href="{% url 'core:blog' %}" class="{% if request.resolver_match.url_name == 'blog' %}is-active{% endif %}">Blog</a></li>
+                    <li><a href="{% url 'core:blog' %}" class="{% if request.resolver_match.url_name == 'blog' or request.resolver_match.url_name == 'blog_post' %}is-active{% endif %}">Blog</a></li>
                 </ul>
                 <a href="{{ site_phone_href }}" class="btn btn-cta">
                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.6a1 1 0 0 1-.25 1z"/></svg>

@@ -276,12 +276,110 @@ class ContactFormTests(TestCase):
         self.assertEqual(self.client.get('/admin/core/contactmessage/add/').status_code, 403)
 
 
-class BlogPageTests(TestCase):
-    """Podstrona bloga."""
+class BlogTests(TestCase):
+    """Blog: lista, pojedynczy wpis, szkice/planowanie, formatowanie tresci i panel."""
 
-    def test_blog_page_returns_200(self):
+    def setUp(self):
+        import tempfile
+        from .models import Post
+        self.media = tempfile.mkdtemp()
+        self.override = override_settings(MEDIA_ROOT=self.media)
+        self.override.enable()
+        Post.objects.all().delete()  # startowe wpisy z migracji nie przeszkadzaja w liczeniu
+
+    def tearDown(self):
+        import shutil
+        self.override.disable()
+        shutil.rmtree(self.media, ignore_errors=True)
+
+    def make_post(self, title='Testowy wpis', **kwargs):
+        from .models import Post
+        data = {'excerpt': 'Krótki wstęp.', 'content': 'Treść.'}
+        data.update(kwargs)
+        return Post.objects.create(title=title, **data)
+
+    def test_blog_page_returns_200_when_empty(self):
         response = self.client.get(reverse('core:blog'))
-        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Pierwsze wpisy pojawią się już wkrótce')
+
+    def test_list_shows_only_live_posts(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        self.make_post('Widoczny')
+        self.make_post('Szkic', is_published=False)
+        self.make_post('Zaplanowany', published_at=timezone.now() + timedelta(days=3))
+        response = self.client.get(reverse('core:blog'))
+        self.assertContains(response, 'Widoczny')
+        self.assertNotContains(response, 'Szkic')
+        self.assertNotContains(response, 'Zaplanowany')
+
+    def test_slug_is_generated_from_polish_title(self):
+        post = self.make_post('Odprysk – naprawić czy wymienić? Łatwo!')
+        self.assertEqual(post.slug, 'odprysk-naprawic-czy-wymienic-latwo')
+        self.assertEqual(self.make_post('Odprysk – naprawić czy wymienić? Łatwo!').slug,
+                         'odprysk-naprawic-czy-wymienic-latwo-2')
+
+    def test_post_page_renders_formatted_content(self):
+        content = (
+            'Pierwszy akapit z **ważnym** słowem.\n\n'
+            '## Śródtytuł\n\n'
+            '- punkt jeden\n- punkt dwa\n\n'
+            '[Link](https://example.com)'
+        )
+        post = self.make_post('Zima', content=content)
+        response = self.client.get(post.get_absolute_url())
+        self.assertContains(response, '<p>Pierwszy akapit z <strong>ważnym</strong> słowem.</p>')
+        self.assertContains(response, '<h2>Śródtytuł</h2>')
+        self.assertContains(response, '<ul><li>punkt jeden</li><li>punkt dwa</li></ul>')
+        self.assertContains(response, '<a href="https://example.com" target="_blank" rel="noopener">Link</a>')
+
+    def test_html_in_content_is_escaped(self):
+        post = self.make_post('XSS', content='<script>alert(1)</script> [zly](javascript:alert(1))')
+        response = self.client.get(post.get_absolute_url())
+        self.assertNotContains(response, '<script>alert(1)</script>')
+        self.assertNotContains(response, 'href="javascript:')
+
+    def test_draft_is_404_for_visitors_but_previewable_by_admin(self):
+        from django.contrib.auth.models import User
+        post = self.make_post('Szkic', is_published=False)
+        self.assertEqual(self.client.get(post.get_absolute_url()).status_code, 404)
+        self.client.force_login(User.objects.create_superuser('admin', 'admin@example.com', 'haslo-testowe'))
+        self.assertContains(self.client.get(post.get_absolute_url()), 'Podgląd: ten wpis nie jest jeszcze widoczny')
+
+    def test_cover_is_converted_and_files_removed_on_delete(self):
+        import os
+        post = self.make_post('Ze zdjęciem', cover=make_image('okladka.jpg'))
+        self.assertTrue(post.cover.name.endswith('.webp'))
+        self.assertTrue(post.cover_thumbnail.name.startswith('blog/min/'))
+        paths = [post.cover.path, post.cover_thumbnail.path]
+        post.delete()
+        self.assertFalse(any(os.path.exists(p) for p in paths))
+
+    def test_pagination(self):
+        for i in range(11):
+            self.make_post(f'Wpis {i}')
+        response = self.client.get(reverse('core:blog'))
+        self.assertContains(response, 'class="post-link"', count=9)
+        self.assertContains(response, 'Strona 1 z 2')
+        self.assertContains(self.client.get(reverse('core:blog') + '?strona=2'), 'class="post-link"', count=2)
+
+    def test_admin_can_add_post(self):
+        from django.contrib.auth.models import User
+        from django.utils import timezone
+        from .models import Post
+        self.client.force_login(User.objects.create_superuser('admin', 'admin@example.com', 'haslo-testowe'))
+        self.assertEqual(self.client.get('/admin/core/post/').status_code, 200)
+        now = timezone.localtime()
+        response = self.client.post('/admin/core/post/add/', {
+            'title': 'Nowy wpis z panelu', 'slug': 'nowy-wpis-z-panelu', 'excerpt': 'Wstęp',
+            'content': 'Treść wpisu', 'cover': make_image('foto.jpg'), 'cover_alt': 'Opis',
+            'is_published': 'on',
+            'published_at_0': now.strftime('%Y-%m-%d'), 'published_at_1': now.strftime('%H:%M:%S'),
+        })
+        self.assertEqual(response.status_code, 302)
+        post = Post.objects.get(slug='nowy-wpis-z-panelu')
+        self.assertContains(self.client.get(post.get_absolute_url()), 'Nowy wpis z panelu')
+
 
 
 class GoogleReviewsTests(TestCase):

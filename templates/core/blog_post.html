@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load blog_tags %}
+{% comment %}
+  Pojedynczy wpis na blogu (adres /blog/<slug>/). Tresc pochodzi z panelu admina
+  i jest zamieniana na HTML filtrem render_post (core/templatetags/blog_tags.py).
+{% endcomment %}
+
+{% block title %}{{ post.title }} – {{ site_name }}{% endblock %}
+{% block description %}{{ post.excerpt }}{% endblock %}
+{% block body_class %}page-blog page-post{% endblock %}
+
+{% block extra_head %}
+{# Podglad linku przy udostepnianiu na Facebooku/Messengerze (Open Graph) #}
+<meta property="og:type" content="article">
+<meta property="og:title" content="{{ post.title }}">
+<meta property="og:description" content="{{ post.excerpt }}">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+{% if post.cover %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.cover.url }}">{% endif %}
+{# Dane wpisu dla Google (schema.org BlogPosting) #}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": "{{ post.title|escapejs }}",
+    "description": "{{ post.excerpt|escapejs }}",
+    "datePublished": "{{ post.published_at|date:'c' }}",
+    "dateModified": "{{ post.updated_at|date:'c' }}",
+    {% if post.cover %}"image": "{{ request.scheme }}://{{ request.get_host }}{{ post.cover.url }}",{% endif %}
+    "author": {"@type": "Organization", "name": "{{ site_name }}"},
+    "publisher": {"@type": "Organization", "name": "{{ site_name }}"},
+    "mainEntityOfPage": "{{ request.build_absolute_uri }}"
+}
+</script>
+{% endblock %}
+
+{% block content %}
+{# Naglowek wpisu: grafitowy jak na liscie bloga #}
+<section class="page-hero post-hero">
+    <div class="container post-container">
+        <a href="{% url 'core:blog' %}" class="post-back">← Wszystkie wpisy</a>
+        {% if not post.is_live %}
+        {# Widzi to tylko zalogowany admin – zwykli odwiedzajacy dostaja blad 404 #}
+        <div class="post-draft">Podgląd: ten wpis nie jest jeszcze widoczny dla odwiedzających ({% if post.is_published %}zaplanowany na {{ post.published_at|date:'j E Y, H:i' }}{% else %}szkic{% endif %}).</div>
+        {% endif %}
+        <time class="post-date" datetime="{{ post.published_at|date:'c' }}">{{ post.published_at|date:'j E Y' }}</time>
+        <h1>{{ post.title }}</h1>
+        <p class="lead">{{ post.excerpt }}</p>
+    </div>
+</section>
+
+<article class="section post-article">
+    <div class="container post-container">
+        {% if post.cover %}
+        <figure class="post-cover">
+            <img src="{{ post.cover.url }}" alt="{{ post.cover_alt|default:post.title }}">
+        </figure>
+        {% endif %}
+
+        <div class="prose">
+            {{ post.content|render_post }}
+        </div>
+
+        {# Zacheta do kontaktu pod kazdym wpisem #}
+        <aside class="post-cta">
+            <div>
+                <strong>Pęknięta szyba albo odprysk?</strong>
+                <span>Zadzwoń – doradzimy, wycenimy i umówimy termin, także z dojazdem do Ciebie.</span>
+            </div>
+            <a href="{{ site_phone_href }}" class="btn btn-cta">Zadzwoń: {{ site_phone }}</a>
+        </aside>
+    </div>
+</article>
+
+{% if others %}
+<section class="section section-tint post-others">
+    <div class="container">
+        <div class="section-head">
+            <h2>Przeczytaj też</h2>
+        </div>
+        <div class="posts">
+            {% for other in others %}
+            <article class="post-card">
+                <div class="post-thumb">
+                    {% if other.cover_thumbnail %}
+                    <img src="{{ other.cover_thumbnail.url }}" alt="{{ other.cover_alt|default:other.title }}" loading="lazy">
+                    {% endif %}
+                </div>
+                <div class="post-body">
+                    <time datetime="{{ other.published_at|date:'c' }}">{{ other.published_at|date:'j E Y' }}</time>
+                    <h2><a href="{{ other.get_absolute_url }}" class="post-link">{{ other.title }}</a></h2>
+                    <p>{{ other.excerpt }}</p>
+                    <span class="post-more">Czytaj dalej →</span>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}

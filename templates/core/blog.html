@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
-{# Podstrona bloga. Na razie statyczne zapowiedzi wpisow – docelowo lista wpisow z bazy danych (model w core/models.py) #}
+{% comment %}
+  Lista wpisow na blogu. Wpisy dodaje sie i edytuje w panelu admina (Blog – wpisy).
+  Widoczne sa tylko opublikowane wpisy z data publikacji, ktora juz minela; po 9 na strone.
+  Pojedynczy wpis ma osobny szablon: core/blog_post.html.
+{% endcomment %}
 
 {% block title %}Blog – {{ site_name }}{% endblock %}
 {% block description %}Porady o szybach samochodowych – blog {{ site_name }}.{% endblock %}
@@ -15,38 +19,39 @@
     </div>
 </section>
 
-{# Karty wpisow – "Wkrotce" do czasu napisania tresci #}
 <section class="section">
     <div class="container">
+        {% if page.object_list %}
         <div class="posts">
+            {% for post in page.object_list %}
+            {# Cala karta jest klikalna (link rozciagniety na karte w CSS – .post-link::after) #}
             <article class="post-card">
-                <div class="post-thumb"><img src="{{ MEDIA_URL }}galeria/min/naprawa-odprysku.webp" alt="Naprawa odprysku na szybie samochodowej" loading="lazy"></div>
+                <div class="post-thumb">
+                    {% if post.cover_thumbnail %}
+                    <img src="{{ post.cover_thumbnail.url }}" alt="{{ post.cover_alt|default:post.title }}" loading="lazy">
+                    {% endif %}
+                </div>
                 <div class="post-body">
-                    <time datetime="2026-10-01">1 października 2026</time>
-                    <h2>Odprysk na szybie – naprawić czy wymienić?</h2>
-                    <p>Wyjaśniamy, kiedy wystarczy szybka naprawa żywicą, a kiedy wymiana szyby jest konieczna.</p>
-                    <span class="post-more">Wkrótce</span>
+                    <time datetime="{{ post.published_at|date:'c' }}">{{ post.published_at|date:'j E Y' }}</time>
+                    <h2><a href="{{ post.get_absolute_url }}" class="post-link">{{ post.title }}</a></h2>
+                    <p>{{ post.excerpt }}</p>
+                    <span class="post-more">Czytaj dalej →</span>
                 </div>
             </article>
-            <article class="post-card">
-                <div class="post-thumb"><img src="{{ MEDIA_URL }}galeria/min/odprysk-przed-naprawa.webp" alt="Szyba samochodowa z kroplami wody" loading="lazy"></div>
-                <div class="post-body">
-                    <time datetime="2026-09-15">15 września 2026</time>
-                    <h2>Jak przygotować szyby auta na zimę</h2>
-                    <p>Kilka prostych nawyków, które chronią szybę przed pęknięciem przy mrozie.</p>
-                    <span class="post-more">Wkrótce</span>
-                </div>
-            </article>
-            <article class="post-card">
-                <div class="post-thumb"><img src="{{ MEDIA_URL }}galeria/min/tesla.webp" alt="Nowa szyba czołowa przygotowana do montażu" loading="lazy"></div>
-                <div class="post-body">
-                    <time datetime="2026-09-01">1 września 2026</time>
-                    <h2>Szyba oryginalna czy zamiennik – czym się różnią?</h2>
-                    <p>Kto produkuje szyby montowane w fabryce i na co zwrócić uwagę przy wyborze nowej szyby.</p>
-                    <span class="post-more">Wkrótce</span>
-                </div>
-            </article>
+            {% endfor %}
         </div>
+
+        {# Numery stron – tylko gdy wpisow jest wiecej niz miesci sie na jednej stronie #}
+        {% if page.has_other_pages %}
+        <nav class="pagination" aria-label="Strony bloga">
+            {% if page.has_previous %}<a href="?strona={{ page.previous_page_number }}" class="btn btn-ghost">← Nowsze</a>{% endif %}
+            <span class="pagination-info">Strona {{ page.number }} z {{ page.paginator.num_pages }}</span>
+            {% if page.has_next %}<a href="?strona={{ page.next_page_number }}" class="btn btn-ghost">Starsze →</a>{% endif %}
+        </nav>
+        {% endif %}
+        {% else %}
+        <p class="blog-empty">Pierwsze wpisy pojawią się już wkrótce.</p>
+        {% endif %}
     </div>
 </section>
 {% endblock %}

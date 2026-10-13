@@ -7,7 +7,7 @@ from django.utils.html import format_html
 
 from django.shortcuts import redirect
 
-from .models import ContactMessage, GalleryItem, GalleryPhoto, PromoSection
+from .models import ContactMessage, GalleryItem, GalleryPhoto, Post, PromoSection
 
 # Naglowki panelu zamiast domyslnego "Administracja Django"
 admin.site.site_header = 'Auto Szyby Pleszew – panel'
@@ -172,3 +172,41 @@ class ContactMessageAdmin(admin.ModelAdmin):
         # Otwarcie wiadomosci w panelu oznacza ja jako przeczytana
         ContactMessage.objects.filter(pk=object_id, is_read=False).update(is_read=True)
         return super().change_view(request, object_id, form_url, extra_context)
+
+
+@admin.register(Post)
+class PostAdmin(admin.ModelAdmin):
+    """Wpisy na blogu: dodawanie, edycja, szkice i planowanie publikacji."""
+    list_display = ['miniatura', 'title', 'published_at', 'is_published', 'status', 'zobacz']
+    list_display_links = ['miniatura', 'title']
+    list_editable = ['is_published']
+    list_filter = ['is_published']
+    search_fields = ['title', 'excerpt', 'content']
+    date_hierarchy = 'published_at'
+    # Adres wpisu uzupelnia sie na zywo podczas wpisywania tytulu
+    prepopulated_fields = {'slug': ['title']}
+    readonly_fields = ['podglad', 'created_at', 'updated_at']
+    fieldsets = [
+        (None, {'fields': ['title', 'slug', 'excerpt', 'content']}),
+        ('Zdjęcie główne', {'fields': ['podglad', 'cover', 'cover_alt']}),
+        ('Publikacja', {'fields': ['is_published', 'published_at', 'created_at', 'updated_at']}),
+    ]
+
+    @admin.display(description='Zdjęcie')
+    def miniatura(self, obj):
+        return preview(obj.cover_thumbnail or obj.cover, 50)
+
+    @admin.display(description='Obecne zdjęcie')
+    def podglad(self, obj):
+        return preview(obj.cover, 160) if obj.pk else '—'
+
+    @admin.display(description='Status')
+    def status(self, obj):
+        if not obj.is_published:
+            return 'Szkic'
+        return 'Widoczny' if obj.is_live else 'Zaplanowany'
+
+    @admin.display(description='')
+    def zobacz(self, obj):
+        # Podglad wpisu na stronie (admin widzi tez szkice i wpisy zaplanowane)
+        return format_html('<a href="{}" target="_blank">Zobacz ↗</a>', obj.get_absolute_url())
