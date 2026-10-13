@@ -46,6 +46,31 @@ class HomePageTests(TestCase):
         self.assertContains(response, 'id="wycieraczki"')
 
 
+class GalleryTests(TestCase):
+    """Galeria: kazde zdjecie z core/gallery.py ma pliki w media/ i trafia na strone."""
+
+    def test_gallery_files_exist(self):
+        from pathlib import Path
+        from django.conf import settings
+        from .gallery import GALLERY, PHOTO_ABOUT, PHOTO_HERO
+        media = Path(settings.MEDIA_ROOT)
+        # media/ nie jest w repozytorium (.gitignore) – na swiezej kopii bez zdjec pomijamy test
+        if not (media / 'galeria').exists():
+            self.skipTest('brak folderu media/galeria (zdjecia nie sa w repozytorium)')
+        for foto in GALLERY:
+            self.assertTrue((media / 'galeria' / f"{foto['plik']}.webp").exists(), foto['plik'])
+            self.assertTrue((media / 'galeria' / 'min' / f"{foto['plik']}.webp").exists(), foto['plik'])
+        self.assertTrue((media / PHOTO_HERO).exists())
+        self.assertTrue((media / PHOTO_ABOUT).exists())
+
+    def test_home_shows_gallery_and_hides_extra_photos(self):
+        from .gallery import GALLERY, GALLERY_VISIBLE
+        response = self.client.get(reverse('core:home'))
+        self.assertContains(response, 'class="gallery-link"', count=len(GALLERY))
+        self.assertContains(response, ' hidden>', count=len(GALLERY) - GALLERY_VISIBLE)
+        self.assertContains(response, 'id="gallery-more"')
+
+
 class BlogPageTests(TestCase):
     """Podstrona bloga."""
 

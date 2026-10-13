@@ -59,3 +59,75 @@
 
     sections.forEach(function (section) { observer.observe(section); });
 })();
+
+/*
+ * Galeria: przycisk "Pokaż więcej zdjęć" i powiększanie zdjęć (lightbox).
+ * Osobna funkcja, bo powyższa kończy działanie na podstronach bez sekcji (return).
+ */
+(function () {
+    var gallery = document.getElementById('gallery');
+    if (!gallery) return;  // galerii nie ma na tej stronie (np. blog)
+
+    // --- "Pokaż więcej zdjęć": odkrywa zdjęcia z atrybutem hidden -----------
+    var moreBtn = document.getElementById('gallery-more');
+    if (moreBtn) {
+        moreBtn.addEventListener('click', function () {
+            gallery.querySelectorAll('.gallery-item[hidden]').forEach(function (item) {
+                item.hidden = false;
+            });
+            moreBtn.parentElement.remove();  // przycisk nie jest już potrzebny
+        });
+    }
+
+    // --- Lightbox -----------------------------------------------------------
+    var dialog = document.getElementById('lightbox');
+    // Bez obsługi <dialog> (bardzo stare przeglądarki) linki po prostu otworzą zdjęcie w karcie
+    if (!dialog || typeof dialog.showModal !== 'function') return;
+
+    var img = dialog.querySelector('img');
+    var caption = dialog.querySelector('figcaption');
+    var current = 0;
+
+    // Lista widocznych zdjęć liczona za każdym razem, bo "Pokaż więcej" dokłada nowe
+    function visibleLinks() {
+        return Array.prototype.filter.call(gallery.querySelectorAll('.gallery-link'), function (a) {
+            return !a.closest('.gallery-item').hidden;
+        });
+    }
+
+    function show(index) {
+        var links = visibleLinks();
+        // Zapętlenie: za ostatnim zdjęciem jest pierwsze i odwrotnie
+        current = (index + links.length) % links.length;
+        var link = links[current];
+        img.src = link.href;
+        img.alt = link.dataset.caption;
+        caption.textContent = link.dataset.caption;
+    }
+
+    gallery.addEventListener('click', function (e) {
+        var link = e.target.closest('.gallery-link');
+        if (!link) return;
+        e.preventDefault();  // zamiast otwierać plik, pokazujemy go w oknie
+        show(visibleLinks().indexOf(link));
+        dialog.showModal();
+    });
+
+    dialog.querySelector('.lightbox-close').addEventListener('click', function () { dialog.close(); });
+    dialog.querySelector('.lightbox-prev').addEventListener('click', function () { show(current - 1); });
+    dialog.querySelector('.lightbox-next').addEventListener('click', function () { show(current + 1); });
+
+    // Kliknięcie w ciemne tło (poza zdjęciem i przyciskami) zamyka okno
+    dialog.addEventListener('click', function (e) {
+        if (e.target === dialog) dialog.close();
+    });
+
+    // Strzałki na klawiaturze przełączają zdjęcia (Esc zamyka okno sam <dialog>)
+    dialog.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft') show(current - 1);
+        if (e.key === 'ArrowRight') show(current + 1);
+    });
+
+    // Po zamknięciu czyścimy obrazek, żeby przy następnym otwarciu nie mignęło stare zdjęcie
+    dialog.addEventListener('close', function () { img.removeAttribute('src'); });
+})();

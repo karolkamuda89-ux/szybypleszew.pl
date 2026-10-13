@@ -9,7 +9,7 @@
 
 {% block content %}
 <!-- HERO -->
-{# Baner na gorze strony: haslo, krotki opis, przyciski i liczby. Tafle "szkla" po prawej to sama dekoracja z CSS #}
+{# Baner na gorze strony: haslo, krotki opis, przyciski i liczby. Po prawej zdjecie siedziby firmy, za nim dekoracyjne tafle "szkla" z CSS #}
 <section class="hero">
     <div class="container hero-inner">
         <div class="hero-text">
@@ -26,10 +26,11 @@
                 <li><strong>Wielkopolska</strong><span>dojazd do klienta</span></li>
             </ul>
         </div>
-        <div class="hero-visual" aria-hidden="true">
-            <div class="glass glass-1"></div>
-            <div class="glass glass-2"></div>
-            <div class="glass glass-3"></div>
+        <div class="hero-visual">
+            <div class="glass glass-2" aria-hidden="true"></div>
+            <div class="glass glass-3" aria-hidden="true"></div>
+            {# Zdjecie na gorze strony ladujemy od razu (bez lazy) i z wysokim priorytetem – to pierwsze, co widzi odwiedzajacy #}
+            <img class="hero-photo" src="{{ MEDIA_URL }}{{ photo_hero }}" alt="Siedziba Auto Szyby Pleszew przy ul. Podgórnej 21 i firmowy van" width="1024" height="768" fetchpriority="high">
         </div>
     </div>
 </section>
@@ -145,8 +146,9 @@
 {# Historia firmy. Rok zalozenia i liczba lat licza sie z SITE_FOUNDED w settings.py #}
 <section class="section" id="o-nas">
     <div class="container split">
-        <div class="split-media" aria-hidden="true">
+        <div class="split-media">
             <div class="media-frame">
+                <img src="{{ MEDIA_URL }}{{ photo_about }}" alt="Biuro obsługi klienta Auto Szyby Pleszew" width="1920" height="1440" loading="lazy">
                 <div class="media-badge">
                     <strong>od {{ site_founded }}</strong>
                     <span>w Pleszewie</span>
@@ -170,23 +172,46 @@
 </section>
 
 <!-- GALERIA -->
-{# Na razie zastepcze kafelki (.gallery-ph). Docelowo w kazdy figure wstawic <img src="..." alt="..."> #}
+{% comment %}
+  Zdjecia i podpisy sa w core/gallery.py. Kafelki pokazuja miniatury (media/galeria/min/),
+  klikniecie otwiera duze zdjecie w powiekszeniu (lightbox w main.js; bez JS link otwiera plik).
+  Zdjecia ponad gallery_visible sa ukryte do klikniecia "Pokaz wiecej zdjec".
+{% endcomment %}
 <section class="section section-tint" id="galeria">
     <div class="container">
         <div class="section-head">
             <span class="eyebrow">Galeria</span>
             <h2>Nasze realizacje</h2>
-            <p>Kilka przykładów naszej pracy.</p>
+            <p>Od aut miejskich, przez sportowe i terenowe, po ciężarówki – tak wygląda nasza codzienna praca.</p>
         </div>
-        <div class="gallery">
-            <figure class="gallery-item gallery-item-wide"><div class="gallery-ph"></div><figcaption>Wymiana szyby czołowej</figcaption></figure>
-            <figure class="gallery-item"><div class="gallery-ph"></div><figcaption>Naprawa odprysku</figcaption></figure>
-            <figure class="gallery-item"><div class="gallery-ph"></div><figcaption>Przeszklenie busa</figcaption></figure>
-            <figure class="gallery-item"><div class="gallery-ph"></div><figcaption>Auto dostawcze</figcaption></figure>
-            <figure class="gallery-item gallery-item-wide"><div class="gallery-ph"></div><figcaption>Szyba w ciężarówce</figcaption></figure>
+        <div class="gallery" id="gallery">
+            {% for foto in gallery %}
+            <figure class="gallery-item gallery-item-{{ foto.ksztalt }}"{% if forloop.counter > gallery_visible %} hidden{% endif %}>
+                <a href="{{ MEDIA_URL }}galeria/{{ foto.plik }}.webp" class="gallery-link" data-caption="{{ foto.podpis }}">
+                    <img src="{{ MEDIA_URL }}galeria/min/{{ foto.plik }}.webp" alt="{{ foto.podpis }}" loading="lazy" decoding="async">
+                </a>
+                <figcaption>{{ foto.podpis }}</figcaption>
+            </figure>
+            {% endfor %}
         </div>
+        {% if gallery_hidden_count %}
+        <div class="gallery-more">
+            <button type="button" class="btn btn-ghost" id="gallery-more">Pokaż więcej zdjęć ({{ gallery_hidden_count }})</button>
+        </div>
+        {% endif %}
     </div>
 </section>
+
+{# Okno powiekszenia zdjecia (lightbox) – otwierane z main.js #}
+<dialog class="lightbox" id="lightbox" aria-label="Powiększone zdjęcie">
+    <button type="button" class="lightbox-close" aria-label="Zamknij">&times;</button>
+    <button type="button" class="lightbox-nav lightbox-prev" aria-label="Poprzednie zdjęcie">&#8249;</button>
+    <figure>
+        <img src="" alt="">
+        <figcaption></figcaption>
+    </figure>
+    <button type="button" class="lightbox-nav lightbox-next" aria-label="Następne zdjęcie">&#8250;</button>
+</dialog>
 
 <!-- KONTAKT -->
 {# Dane kontaktowe z settings.py. Adres otwiera Google Maps w nowej karcie #}

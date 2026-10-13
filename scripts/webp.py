@@ -8,9 +8,10 @@ Przyklady uzycia (z glownego folderu projektu):
     python scripts/webp.py static/img -q 75           # mocniejsza kompresja (domyslnie 82)
     python scripts/webp.py static/img --usun          # usun oryginaly po udanej konwersji
     python scripts/webp.py static/img --nadpisz       # przerob ponownie tez te, ktore maja juz .webp
+    python scripts/webp.py zdjecia --out media/galeria  # zapisz WebP w innym folderze
 
-Plik WebP powstaje obok oryginalu, z ta sama nazwa (np. galeria/bus.jpg -> galeria/bus.webp).
-Domyslnie oryginaly zostaja nietkniete.
+Plik WebP powstaje obok oryginalu, z ta sama nazwa (np. galeria/bus.jpg -> galeria/bus.webp),
+albo w folderze podanym w --out (z zachowaniem podfolderow). Domyslnie oryginaly zostaja nietkniete.
 """
 import argparse
 import sys
@@ -23,22 +24,25 @@ OBSLUGIWANE = {'.jpg', '.jpeg', '.png', '.bmp', '.tif', '.tiff', '.gif'}
 
 
 def znajdz_zdjecia(sciezki):
-    """Zwraca liste plikow graficznych z podanych sciezek (pliki lub foldery, rekurencyjnie)."""
+    """Zwraca liste par (plik, sciezka wzgledna) z podanych sciezek (pliki lub foldery, rekurencyjnie).
+
+    Sciezka wzgledna sluzy do odtworzenia podfolderow przy zapisie do --out.
+    """
     pliki = []
     for sciezka in sciezki:
         p = Path(sciezka)
         if p.is_dir():
-            pliki.extend(f for f in sorted(p.rglob('*')) if f.suffix.lower() in OBSLUGIWANE)
+            pliki.extend((f, f.relative_to(p)) for f in sorted(p.rglob('*')) if f.suffix.lower() in OBSLUGIWANE)
         elif p.is_file() and p.suffix.lower() in OBSLUGIWANE:
-            pliki.append(p)
+            pliki.append((p, Path(p.name)))
         else:
             print(f'  pomijam: {p} (nie istnieje albo to nie jest obslugiwany obraz)')
     return pliki
 
 
-def konwertuj(plik, jakosc, max_bok):
-    """Zapisuje plik jako WebP obok oryginalu. Zwraca sciezke do nowego pliku."""
-    cel = plik.with_suffix('.webp')
+def konwertuj(plik, cel, jakosc, max_bok):
+    """Zapisuje plik jako WebP pod sciezka `cel`."""
+    cel.parent.mkdir(parents=True, exist_ok=True)
     with Image.open(plik) as img:
         # Zdjecia z telefonu czesto sa zapisane "na boku" i obracane tylko przez znacznik EXIF.
         # exif_transpose obraca je fizycznie, zeby w WebP nie lezaly krzywo.
@@ -57,7 +61,6 @@ def konwertuj(plik, jakosc, max_bok):
 
         # method=6 – najwolniejsza, ale najlepsza kompresja (plik mniejszy przy tej samej jakosci)
         img.save(cel, 'WEBP', quality=jakosc, method=6)
-    return cel
 
 
 def czytelny_rozmiar(bajty):
@@ -76,6 +79,8 @@ def main():
                         help='maksymalny dluzszy bok w px, np. 1920 (domyslnie bez zmniejszania)')
     parser.add_argument('--usun', action='store_true', help='usun oryginaly po udanej konwersji')
     parser.add_argument('--nadpisz', action='store_true', help='przerob tez pliki, ktore maja juz wersje .webp')
+    parser.add_argument('--out', type=Path, default=None,
+                        help='folder docelowy (domyslnie WebP zapisuje sie obok oryginalu)')
     args = parser.parse_args()
 
     if not 1 <= args.jakosc <= 100:
@@ -88,15 +93,16 @@ def main():
 
     przed_suma = po_suma = 0
     zrobione = pominiete = bledy = 0
-    for plik in pliki:
-        cel = plik.with_suffix('.webp')
+    for plik, wzgledna in pliki:
+        # Gdzie zapisac WebP: obok oryginalu albo w --out z zachowaniem podfolderow
+        cel = (args.out / wzgledna).with_suffix('.webp') if args.out else plik.with_suffix('.webp')
         # Domyslnie nie przerabiamy drugi raz plikow, ktore maja juz aktualna wersje WebP
         if cel.exists() and not args.nadpisz and cel.stat().st_mtime >= plik.stat().st_mtime:
             pominiete += 1
             continue
         try:
             przed = plik.stat().st_size
-            konwertuj(plik, args.jakosc, args.max_bok)
+            konwertuj(plik, cel, args.jakosc, args.max_bok)
             po = cel.stat().st_size
         except Exception as exc:  # uszkodzony plik nie powinien przerwac calej konwersji
             bledy += 1
@@ -107,7 +113,7 @@ def main():
         po_suma += po
         zrobione += 1
         oszczednosc = 100 - po * 100 / przed if przed else 0
-        print(f'  {plik} -> {cel.name}  {czytelny_rozmiar(przed)} -> {czytelny_rozmiar(po)} (-{oszczednosc:.0f}%)')
+        print(f'  {plik.name} -> {cel}  {czytelny_rozmiar(przed)} -> {czytelny_rozmiar(po)} (-{oszczednosc:.0f}%)')
         if args.usun:
             plik.unlink()
 

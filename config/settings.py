@@ -68,6 +68,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # {{ MEDIA_URL }} w szablonach – adres folderu media/ ze zdjeciami
+                'django.template.context_processors.media',
                 # Dane firmy dostepne w kazdym szablonie, np. {{ site_phone }}
                 'core.context_processors.site_info',
             ],

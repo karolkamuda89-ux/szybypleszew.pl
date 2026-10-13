@@ -317,10 +317,18 @@ img { max-width: 100%; display: block; }
     border-radius: inherit;
     background: linear-gradient(115deg, transparent 0 38%, rgba(255,255,255,.45) 38% 46%, transparent 46% 52%, rgba(255,255,255,.25) 52% 55%, transparent 55%);
 }
-.glass-1 {
-    inset: 30px 70px 70px 30px;
-    background: linear-gradient(150deg, var(--glass-200), var(--glass-400) 50%, var(--glass-600));
-    border: 10px solid var(--lime-400);
+/* Zdjęcie siedziby firmy w banerze – limonkowa ramka nawiązuje do ramy szyby z logo,
+   a tafle .glass-2 i .glass-3 wystają zza zdjęcia jako dekoracja */
+.hero-photo {
+    position: absolute;
+    inset: 30px 60px 60px 20px;
+    z-index: 1;
+    width: calc(100% - 80px);
+    height: calc(100% - 90px);
+    object-fit: cover;
+    border-radius: 18px;
+    border: 8px solid var(--lime-400);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .5);
 }
 .glass-2 {
     width: 40%;
@@ -442,8 +450,17 @@ img { max-width: 100%; display: block; }
     border: 8px solid var(--graphite-900);
     box-shadow: var(--shadow);
 }
+.media-frame img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: calc(var(--radius-lg) - 8px);  /* zaokraglenie dopasowane do ramki 8 px */
+}
 .media-badge {
     position: absolute;
+    z-index: 1;
     right: -18px;
     bottom: 28px;
     background: var(--graphite-900);
@@ -509,10 +526,13 @@ img { max-width: 100%; display: block; }
 #wycieraczki .split-text .btn { margin-top: 28px; }
 
 /* Galeria */
+/* Siatka 4 kolumn; kafelki mają różne rozmiary (z pola "ksztalt" w core/gallery.py).
+   grid-auto-flow: dense dopycha mniejsze kafelki w wolne miejsca, żeby nie zostawały dziury. */
 .gallery {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-auto-rows: 220px;
+    grid-auto-flow: dense;
     gap: 16px;
 }
 .gallery-item {
@@ -521,7 +541,11 @@ img { max-width: 100%; display: block; }
     border-radius: var(--radius);
     overflow: hidden;
 }
-.gallery-item-wide { grid-column: span 2; }
+.gallery-item-wide,
+.gallery-item-szerokie { grid-column: span 2; }   /* szeroki kafelek: 2 kolumny */
+.gallery-item-pionowe { grid-row: span 2; }       /* wysoki kafelek na zdjęcia pionowe: 2 rzędy */
+.gallery-item[hidden] { display: none; }           /* zdjęcia schowane pod "Pokaż więcej" */
+.gallery-link { display: block; width: 100%; height: 100%; cursor: zoom-in; }
 .gallery-ph,
 .gallery-item img {
     width: 100%;
@@ -542,6 +566,8 @@ img { max-width: 100%; display: block; }
 .gallery-item:hover .gallery-ph,
 .gallery-item:hover img { transform: scale(1.05); }
 .gallery-item figcaption {
+    pointer-events: none;  /* kliknięcie w podpis też otwiera powiększenie */
+    max-width: calc(100% - 24px);
     position: absolute;
     left: 12px;
     bottom: 12px;
@@ -553,6 +579,46 @@ img { max-width: 100%; display: block; }
     border-radius: 999px;
     border-left: 3px solid var(--lime-400);
 }
+
+.gallery-more { text-align: center; margin-top: 28px; }
+
+/* Okno powiększenia zdjęcia (lightbox). Element <dialog> sam obsługuje Esc i blokuje resztę strony. */
+.lightbox {
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+.lightbox::backdrop { background: rgba(10, 11, 14, .92); }
+.lightbox[open] { display: flex; align-items: center; justify-content: center; }
+.lightbox figure { margin: 0; max-width: min(1400px, 92vw); text-align: center; }
+.lightbox img {
+    max-width: 100%;
+    max-height: 82vh;
+    border-radius: 10px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .6);
+}
+.lightbox figcaption { margin-top: 14px; color: #fff; font-weight: 600; }
+.lightbox-close,
+.lightbox-nav {
+    position: fixed;
+    border: 0;
+    border-radius: 50%;
+    width: 52px;
+    height: 52px;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--graphite-950);
+    background: var(--lime-400);
+    cursor: pointer;
+}
+.lightbox-close { top: 18px; right: 18px; }
+.lightbox-prev { left: 18px; top: 50%; transform: translateY(-50%); }
+.lightbox-next { right: 18px; top: 50%; transform: translateY(-50%); }
 
 /* Kontakt */
 .section-dark {
@@ -679,6 +745,7 @@ img { max-width: 100%; display: block; }
     transition: transform .25s, box-shadow .25s, border-color .25s;
 }
 .post-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--lime-400); }
+.post-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .post-thumb {
     aspect-ratio: 16 / 9;
     background:
@@ -817,7 +884,10 @@ img { max-width: 100%; display: block; }
     .gallery { grid-template-columns: 1fr 1fr; grid-auto-rows: 160px; }
     .hero-actions .btn { width: 100%; }
     .hero-stats { gap: 22px; }
-    .hero-visual { display: none; }
+    .hero-visual { height: 230px; }
+    .hero-visual .glass { display: none; }
+    .hero-photo { inset: 0; width: 100%; height: 100%; border-width: 6px; }
+    .lightbox-nav { top: auto; bottom: 18px; transform: none; }
 }
 
 /* Dla osób, które w systemie wyłączyły animacje – bez płynnego przewijania i przejść */
