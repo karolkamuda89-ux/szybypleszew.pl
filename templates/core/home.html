@@ -246,34 +246,78 @@
 </dialog>
 
 <!-- KONTAKT -->
-{# Dane kontaktowe z settings.py. Adres otwiera Google Maps w nowej karcie #}
+{% comment %}
+  Lewa kolumna: zacheta do kontaktu + dane z settings.py (pod soba).
+  Prawa kolumna: formularz kontaktowy (core/forms.py). Wyslane wiadomosci trafiaja do panelu admina
+  ("Wiadomosci z formularza") i e-mailem na adres firmy. action="/#kontakt" sprawia, ze po wyslaniu
+  (albo przy bledach) strona wraca od razu do tej sekcji.
+{% endcomment %}
 <section class="section section-dark" id="kontakt">
     <div class="container contact">
-        <div class="contact-text">
-            <span class="eyebrow">Kontakt</span>
-            <h2>Umów montaż lub zapytaj o cenę</h2>
-            <p>Najszybciej załatwisz to telefonicznie – podaj markę, model i rocznik auta, a podamy cenę szyby z montażem i termin. Możemy przyjechać do Ciebie albo zapraszamy do nas na ul. Podgórną w Pleszewie.</p>
-            <a href="{{ site_phone_href }}" class="btn btn-cta btn-lg">Zadzwoń: {{ site_phone }}</a>
+        <div class="contact-info">
+            <div class="contact-text">
+                <span class="eyebrow">Kontakt</span>
+                <h2>Umów montaż lub zapytaj o cenę</h2>
+                <p>Najszybciej załatwisz to telefonicznie – podaj markę, model i rocznik auta, a podamy cenę szyby z montażem i termin. Możemy przyjechać do Ciebie albo zapraszamy do nas na ul. Podgórną w Pleszewie.</p>
+                <a href="{{ site_phone_href }}" class="btn btn-cta btn-lg">Zadzwoń: {{ site_phone }}</a>
+            </div>
+            <ul class="contact-list">
+                <li>
+                    <span class="contact-label">Telefon</span>
+                    <a href="{{ site_phone_href }}">{{ site_phone }}</a>
+                </li>
+                <li>
+                    <span class="contact-label">E-mail</span>
+                    <a href="mailto:{{ site_email }}">{{ site_email }}</a>
+                    <span class="contact-alt">zapasowy: <a href="mailto:{{ site_email_alt }}">{{ site_email_alt }}</a></span>
+                </li>
+                <li>
+                    <span class="contact-label">Adres</span>
+                    <a href="https://www.google.com/maps/search/?api=1&amp;query={{ site_street|urlencode }}%2C%20{{ site_postcode }}%20{{ site_city|urlencode }}" target="_blank" rel="noopener">{{ site_address }}</a>
+                </li>
+                <li>
+                    <span class="contact-label">Godziny otwarcia</span>
+                    <span>{{ site_hours_weekdays }}<br>{{ site_hours_saturday }}</span>
+                </li>
+            </ul>
         </div>
-        <ul class="contact-list">
-            <li>
-                <span class="contact-label">Telefon</span>
-                <a href="{{ site_phone_href }}">{{ site_phone }}</a>
-            </li>
-            <li>
-                <span class="contact-label">E-mail</span>
-                <a href="mailto:{{ site_email }}">{{ site_email }}</a>
-                <span class="contact-alt">zapasowy: <a href="mailto:{{ site_email_alt }}">{{ site_email_alt }}</a></span>
-            </li>
-            <li>
-                <span class="contact-label">Adres</span>
-                <a href="https://www.google.com/maps/search/?api=1&amp;query={{ site_street|urlencode }}%2C%20{{ site_postcode }}%20{{ site_city|urlencode }}" target="_blank" rel="noopener">{{ site_address }}</a>
-            </li>
-            <li>
-                <span class="contact-label">Godziny otwarcia</span>
-                <span>{{ site_hours_weekdays }}<br>{{ site_hours_saturday }}</span>
-            </li>
-        </ul>
+
+        <div class="contact-form-card">
+            <h3>Napisz do nas</h3>
+            <p class="contact-form-intro">Zostaw numer – oddzwonimy z wyceną.</p>
+
+            {% for message in messages %}
+            <div class="form-success" role="status">{{ message }}</div>
+            {% endfor %}
+
+            <form method="post" action="/#kontakt" class="contact-form" novalidate>
+                {% csrf_token %}
+                {% if contact_form.non_field_errors %}<div class="form-error">{{ contact_form.non_field_errors|join:" " }}</div>{% endif %}
+                <div class="form-row">
+                    {% include 'core/_field.html' with field=contact_form.name %}
+                    {% include 'core/_field.html' with field=contact_form.phone %}
+                </div>
+                <div class="form-row">
+                    {% include 'core/_field.html' with field=contact_form.email %}
+                    {% include 'core/_field.html' with field=contact_form.car %}
+                </div>
+                {% include 'core/_field.html' with field=contact_form.message %}
+
+                {# Pulapka na boty – pole niewidoczne dla ludzi (patrz ContactForm.website) #}
+                <div class="form-hp" aria-hidden="true">
+                    <label for="{{ contact_form.website.id_for_label }}">Nie wypełniaj tego pola</label>
+                    {{ contact_form.website }}
+                </div>
+
+                <label class="form-consent{% if contact_form.consent.errors %} has-error{% endif %}">
+                    {{ contact_form.consent }}
+                    <span>{{ contact_form.consent.label }}</span>
+                </label>
+                {% for error in contact_form.consent.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+
+                <button type="submit" class="btn btn-cta btn-lg form-submit">Wyślij wiadomość</button>
+            </form>
+        </div>
     </div>
 </section>
 

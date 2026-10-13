@@ -166,3 +166,23 @@ GOOGLE_RATING_FALLBACK = 4.8
 GOOGLE_RATING_COUNT_FALLBACK = 250
 # Jak dlugo trzymac pobrane opinie w pamieci, zanim zapytamy Google ponownie (12 godzin)
 GOOGLE_REVIEWS_CACHE_SECONDS = 12 * 60 * 60
+
+# ---------------------------------------------------------------------------
+# E-mail: powiadomienia o wiadomosciach z formularza kontaktowego.
+# Dane skrzynki (np. interia.pl) podaje sie w zmiennych srodowiskowych na serwerze.
+# Bez EMAIL_HOST e-maile sa tylko wypisywane w terminalu (wygodne lokalnie);
+# wiadomosci i tak zapisuja sie w bazie i sa widoczne w panelu admina.
+# ---------------------------------------------------------------------------
+EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+if EMAIL_HOST:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '465'))
+    EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+    EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'True') == 'True'   # port 465 = SSL
+    EMAIL_TIMEOUT = 10
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER if EMAIL_HOST else 'strona@szybypleszew.pl')
+# Na te adresy przychodza powiadomienia o nowych wiadomosciach z formularza
+CONTACT_RECIPIENTS = [SITE_EMAIL]

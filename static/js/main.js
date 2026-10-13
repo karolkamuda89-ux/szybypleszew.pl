@@ -192,3 +192,18 @@
     // Po zamknięciu czyścimy obrazek, żeby przy następnym otwarciu nie mignęło stare zdjęcie
     dialog.addEventListener('close', function () { img.removeAttribute('src'); });
 })();
+
+/*
+ * Formularz kontaktowy: po wysłaniu (komunikat "Dziękujemy") albo przy błędach
+ * przewijamy stronę do sekcji Kontakt – inaczej użytkownik zostałby na górze strony
+ * i nie zobaczyłby, co się stało.
+ */
+(function () {
+    var card = document.querySelector('.contact-form-card');
+    if (!card || !card.querySelector('.field-error, .form-error, .form-success')) return;
+    // 'instant' – zaraz po załadowaniu strony skok jest naturalniejszy niż płynne przewijanie przez całą stronę
+    document.getElementById('kontakt').scrollIntoView({ behavior: 'instant', block: 'start' });
+    // Przy błędach ustawiamy kursor w pierwszym błędnym polu, żeby od razu można było poprawić
+    var firstInvalid = card.querySelector('.has-error input, .has-error textarea');
+    if (firstInvalid) firstInvalid.focus({ preventScroll: true });
+})();

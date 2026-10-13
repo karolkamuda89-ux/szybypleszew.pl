@@ -1,0 +1,6 @@
+{# Jedno pole formularza: etykieta, pole i komunikaty bledow. Uzycie: {% include 'core/_field.html' with field=form.name %} #}
+<div class="form-field{% if field.errors %} has-error{% endif %}">
+    <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="req" aria-hidden="true">*</span>{% endif %}</label>
+    {{ field }}
+    {% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</div>

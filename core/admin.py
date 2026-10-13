@@ -7,7 +7,7 @@ from django.utils.html import format_html
 
 from django.shortcuts import redirect
 
-from .models import GalleryItem, GalleryPhoto, PromoSection
+from .models import ContactMessage, GalleryItem, GalleryPhoto, PromoSection
 
 # Naglowki panelu zamiast domyslnego "Administracja Django"
 admin.site.site_header = 'Auto Szyby Pleszew – panel'
@@ -137,3 +137,38 @@ class PromoSectionAdmin(admin.ModelAdmin):
         if promo:
             return redirect('admin:core_promosection_change', promo.pk)
         return redirect('admin:core_promosection_add')
+
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    """Wiadomosci z formularza kontaktowego – tylko do odczytu (poza znacznikiem "Przeczytana")."""
+    list_display = ['created_at', 'name', 'telefon', 'car', 'skrot', 'is_read', 'email_sent']
+    list_display_links = ['created_at', 'name']
+    list_editable = ['is_read']
+    list_filter = ['is_read', 'created_at']
+    search_fields = ['name', 'phone', 'email', 'car', 'message']
+    readonly_fields = ['name', 'phone', 'email', 'car', 'message', 'created_at', 'email_sent']
+    fields = ['created_at', 'name', 'phone', 'email', 'car', 'message', 'is_read', 'email_sent']
+    actions = ['oznacz_przeczytane']
+
+    @admin.display(description='Telefon')
+    def telefon(self, obj):
+        # Klikniecie numeru na telefonie od razu dzwoni do klienta
+        return format_html('<a href="tel:{}">{}</a>', obj.phone.replace(' ', ''), obj.phone)
+
+    @admin.display(description='Wiadomość')
+    def skrot(self, obj):
+        return (obj.message[:60] + '…') if len(obj.message) > 60 else obj.message
+
+    @admin.action(description='Oznacz zaznaczone jako przeczytane')
+    def oznacz_przeczytane(self, request, queryset):
+        queryset.update(is_read=True)
+
+    def has_add_permission(self, request):
+        # Wiadomosci przychodza tylko z formularza na stronie
+        return False
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        # Otwarcie wiadomosci w panelu oznacza ja jako przeczytana
+        ContactMessage.objects.filter(pk=object_id, is_read=False).update(is_read=True)
+        return super().change_view(request, object_id, form_url, extra_context)

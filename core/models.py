@@ -164,3 +164,24 @@ class PromoSection(models.Model):
         # Po podmianie lub usunieciu zdjecia kasujemy stary plik
         if old_image and old_image != self.image.name:
             self.image.storage.delete(old_image)
+
+
+class ContactMessage(models.Model):
+    """Wiadomosc wyslana formularzem kontaktowym. Zapisywana zawsze – nawet gdy e-mail nie dojdzie."""
+
+    name = models.CharField('Imię', max_length=100)
+    phone = models.CharField('Telefon', max_length=30)
+    email = models.EmailField('E-mail', blank=True)
+    car = models.CharField('Auto', max_length=150, blank=True, help_text='Marka, model, rocznik')
+    message = models.TextField('Wiadomość', blank=True)
+    created_at = models.DateTimeField('Wysłano', auto_now_add=True)
+    is_read = models.BooleanField('Przeczytana', default=False)
+    email_sent = models.BooleanField('Powiadomienie e-mail wysłane', default=False, editable=False)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'wiadomość z formularza'
+        verbose_name_plural = 'Wiadomości z formularza'
+
+    def __str__(self):
+        return f'{self.name} ({self.phone}) – {self.created_at:%d.%m.%Y %H:%M}'

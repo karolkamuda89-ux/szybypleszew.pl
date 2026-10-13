@@ -218,6 +218,64 @@ class PromoSectionTests(TestCase):
         self.assertEqual(self.client.get(f'/admin/core/promosection/{self.promo.pk}/delete/').status_code, 403)
 
 
+class ContactFormTests(TestCase):
+    """Formularz kontaktowy: zapis wiadomosci, e-mail, bledy, ochrona przed spamem i panel."""
+
+    VALID = {'name': 'Jan', 'phone': '600 100 200', 'email': 'jan@example.com',
+             'car': 'Skoda Octavia 2018', 'message': 'Pęknięta szyba czołowa', 'consent': 'on', 'website': ''}
+
+    def test_valid_message_is_saved_and_emailed(self):
+        from django.core import mail
+        from .models import ContactMessage
+        response = self.client.post(reverse('core:home'), self.VALID)
+        self.assertRedirects(response, '/#kontakt', fetch_redirect_response=False)
+        msg = ContactMessage.objects.get()
+        self.assertEqual(msg.phone, '600 100 200')
+        self.assertTrue(msg.email_sent)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('600 100 200', mail.outbox[0].body)
+        self.assertEqual(mail.outbox[0].to, ['szybypleszew@interia.pl'])
+        # komunikat o wyslaniu po przekierowaniu
+        self.assertContains(self.client.get(reverse('core:home')), 'Wiadomość została wysłana')
+
+    def test_errors_are_shown_and_nothing_saved(self):
+        from .models import ContactMessage
+        data = dict(self.VALID, name='', phone='123', consent='')
+        response = self.client.post(reverse('core:home'), data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Podaj imię.')
+        self.assertContains(response, 'co najmniej 9 cyfr')
+        self.assertContains(response, 'Zaznacz zgodę')
+        self.assertFalse(ContactMessage.objects.exists())
+
+    def test_honeypot_blocks_bots(self):
+        from django.core import mail
+        from .models import ContactMessage
+        response = self.client.post(reverse('core:home'), dict(self.VALID, website='http://spam.example'))
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(ContactMessage.objects.exists())
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_failed_email_still_saves_message(self):
+        from .models import ContactMessage
+        with mock.patch('core.views.send_mail', side_effect=OSError('SMTP down')):
+            self.client.post(reverse('core:home'), self.VALID)
+        msg = ContactMessage.objects.get()
+        self.assertFalse(msg.email_sent)
+
+    def test_admin_lists_and_marks_read_on_open(self):
+        from django.contrib.auth.models import User
+        from .models import ContactMessage
+        self.client.post(reverse('core:home'), self.VALID)
+        msg = ContactMessage.objects.get()
+        self.client.force_login(User.objects.create_superuser('admin', 'admin@example.com', 'haslo-testowe'))
+        self.assertContains(self.client.get('/admin/core/contactmessage/'), 'Skoda Octavia 2018')
+        self.assertEqual(self.client.get(f'/admin/core/contactmessage/{msg.pk}/change/').status_code, 200)
+        msg.refresh_from_db()
+        self.assertTrue(msg.is_read)
+        self.assertEqual(self.client.get('/admin/core/contactmessage/add/').status_code, 403)
+
+
 class BlogPageTests(TestCase):
     """Podstrona bloga."""
 
