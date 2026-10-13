@@ -11,84 +11,81 @@ POSTS = [
         'title': 'Odprysk na szybie – naprawić czy wymienić?',
         'slug': 'odprysk-na-szybie-naprawic-czy-wymienic',
         'date': datetime.datetime(2026, 10, 1, 9, 0, tzinfo=datetime.timezone.utc),
-        'excerpt': 'Kamień uderzył w szybę i została mała gwiazdka? Wyjaśniamy, kiedy wystarczy szybka '
-                   'naprawa żywicą, a kiedy wymiana szyby jest konieczna.',
-        'content': '''Mały odprysk łatwo zbagatelizować – przecież prawie go nie widać. Problem w tym, że szyba ciągle pracuje: nagrzewa się i stygnie, drga na nierównościach, a zimą dochodzą duże różnice temperatur między wnętrzem auta a powietrzem na zewnątrz. Z dnia na dzień z niewinnej gwiazdki może zrobić się długie pęknięcie, a wtedy naprawa nie wchodzi już w grę.
+        'excerpt': 'Kamień uderzył w szybę i została mała gwiazdka? Podpowiadamy, kiedy wystarczy naprawa, a kiedy trzeba wymienić szybę.',
+        'content': '''Mały odprysk łatwo zlekceważyć, bo prawie go nie widać. Tylko że szyba cały czas pracuje. Nagrzewa się, stygnie, drga na dziurach. Zimą dochodzi różnica temperatur między ciepłym wnętrzem a mrozem na zewnątrz. Z małej gwiazdki potrafi z dnia na dzień zrobić się długie pęknięcie, a wtedy naprawa już nie wchodzi w grę.
 
-## Kiedy odprysk można naprawić
+## Kiedy da się naprawić
 
-Naprawa jest zwykle możliwa, gdy:
+Zwykle wtedy, gdy:
 
-- uszkodzenie jest niewielkie (mniej więcej do rozmiaru monety),
-- odprysk nie leży tuż przy krawędzi szyby,
-- nie znajduje się na wprost oczu kierowcy,
-- od odprysku nie rozchodzą się jeszcze pęknięcia.
+- odprysk jest mały (mniej więcej jak moneta),
+- nie jest tuż przy krawędzi szyby,
+- nie jest na wprost oczu kierowcy,
+- nie idą od niego jeszcze pęknięcia.
 
-Ostatecznie zawsze oceniamy uszkodzenie na miejscu – wystarczy przyjechać albo przesłać zdjęcie.
+Zawsze oceniamy to na miejscu. Wystarczy podjechać albo wysłać nam zdjęcie.
 
 ## Jak wygląda naprawa
 
-Miejsce uszkodzenia oczyszczamy, a następnie wypełniamy specjalną żywicą, którą utwardzamy. Naprawa trwa krótko, szyba odzyskuje wytrzymałość, a odprysk staje się dużo mniej widoczny. **Na naprawę odprysków po uderzeniu kamienia dajemy bezterminową gwarancję na pęknięcie.**
+Czyścimy uszkodzenie, wypełniamy je specjalną żywicą i utwardzamy. Trwa to krótko, szyba wraca do wytrzymałości, a odprysk prawie znika. **Na naprawę odprysku po kamieniu dajemy bezterminową gwarancję na pęknięcie.**
 
-## Kiedy potrzebna jest wymiana szyby
+## Kiedy trzeba wymienić szybę
 
 - gdy od odprysku poszło już pęknięcie,
 - gdy uszkodzenie jest duże albo jest ich kilka,
-- gdy odprysk leży przy krawędzi lub w polu widzenia kierowcy.
+- gdy odprysk jest przy krawędzi albo w polu widzenia kierowcy.
 
 ## Co zrobić od razu po uderzeniu kamienia
 
-Zaklej odprysk od zewnątrz kawałkiem przezroczystej taśmy – ochroni go przed brudem i wilgocią, a naprawa będzie skuteczniejsza. Unikaj kierowania gorącego nawiewu prosto na zimną szybę i trzaskania drzwiami. I nie zwlekaj z wizytą – im szybciej, tym większa szansa, że skończy się na naprawie.''',
+Zaklej odprysk od zewnątrz kawałkiem przezroczystej taśmy, żeby nie wszedł tam brud i woda. Nie dmuchaj gorącym nawiewem na zimną szybę i nie trzaskaj drzwiami. No i nie odkładaj tego na później. Im szybciej przyjedziesz, tym większa szansa, że skończy się na naprawie.''',
     },
     {
         'title': 'Jak przygotować szyby auta na zimę',
         'slug': 'jak-przygotowac-szyby-auta-na-zime',
         'date': datetime.datetime(2026, 9, 15, 9, 0, tzinfo=datetime.timezone.utc),
-        'excerpt': 'Kilka prostych nawyków, które chronią szybę przed pęknięciem przy mrozie '
-                   'i poprawiają widoczność w zimowe poranki.',
-        'content': '''Zima to dla szyb najtrudniejszy czas w roku. Mróz, sól, piasek na drogach i gwałtowne zmiany temperatury sprawiają, że drobne uszkodzenia szybko się powiększają. Oto, o czym warto pamiętać.
+        'excerpt': 'Kilka prostych rzeczy, dzięki którym szyba przetrwa mrozy bez pęknięcia, a rano szybciej odparujesz auto.',
+        'content': '''Zima to dla szyb najgorszy czas w roku. Mróz, sól i piasek na drodze oraz nagłe zmiany temperatury sprawiają, że małe uszkodzenia szybko się powiększają. Oto, o czym warto pamiętać.
 
 ## Napraw odpryski przed mrozami
 
-Woda, która dostanie się do odprysku, zamarza i rozsadza szkło od środka. Jeśli na szybie jest jakakolwiek gwiazdka, najlepiej naprawić ją jesienią – zanim zrobi się z niej pęknięcie przez pół szyby.
+Woda dostaje się do odprysku, zamarza i rozsadza szkło od środka. Jeśli masz na szybie jakąś gwiazdkę, napraw ją jesienią, zanim zrobi się z niej pęknięcie przez pół szyby.
 
 ## Nie polewaj szyby gorącą wodą
 
-To najczęstszy zimowy błąd. Nagła zmiana temperatury może sprawić, że szyba pęknie – szczególnie gdy ma już jakiś odprysk. Zamiast tego użyj odmrażacza w sprayu i skrobaczki, a nawiew włączaj stopniowo, zaczynając od niższej temperatury.
+To najczęstszy zimowy błąd. Nagła zmiana temperatury potrafi pęknąć szybę, zwłaszcza gdy ma już odprysk. Lepiej użyć odmrażacza w sprayu i skrobaczki, a nawiew włączać stopniowo, od chłodniejszego.
 
 ## Wymień pióra wycieraczek
 
-Zużyte pióra zostawiają smugi, piszczą i gorzej zbierają śnieg z wodą, a twarde, popękane gumy mogą rysować szybę. Jesień to dobry moment na wymianę – pióra dobierzemy do Twojego auta i od razu zamontujemy.
+Stare pióra zostawiają smugi, piszczą i słabo zbierają mokry śnieg. Twarda, popękana guma może nawet rysować szybę. Jesień to dobry moment na nowe pióra. Mamy je u siebie, dobierzemy do auta i od razu założymy.
 
-## Pamiętaj o zimowym płynie do spryskiwaczy
+## Wlej zimowy płyn do spryskiwaczy
 
-Letni płyn zamarza w zbiorniku i przewodach. Zimowy płyn wlej, zanim przyjdą pierwsze przymrozki.
+Letni płyn zamarza w zbiorniku i w przewodach. Zimowy wlej, zanim przyjdą pierwsze przymrozki.
 
-## Dbaj o czystość szyby od środka
+## Umyj szybę od środka
 
-Brudna szyba od wewnątrz szybciej paruje, a pod słońce zimą tworzy uciążliwe odblaski. Raz na jakiś czas przetrzyj ją od środka – poprawi to widoczność i skróci czas odparowywania.''',
+Brudna szyba od środka szybciej paruje, a pod słońce robi się na niej mocny odblask. Przetrzyj ją raz na jakiś czas, a rano szybciej odparujesz auto.''',
     },
     {
         'title': 'Szyba oryginalna czy zamiennik – czym się różnią?',
         'slug': 'szyba-oryginalna-czy-zamiennik',
         'date': datetime.datetime(2026, 9, 1, 9, 0, tzinfo=datetime.timezone.utc),
-        'excerpt': 'Kto produkuje szyby montowane w fabryce i na co zwrócić uwagę przy wyborze nowej szyby '
-                   'do swojego auta.',
-        'content': '''Przy wymianie szyby często pada pytanie: oryginał czy zamiennik? Odpowiedź jest prostsza, niż się wydaje – wystarczy wiedzieć, kto naprawdę produkuje szyby samochodowe.
+        'excerpt': 'Kto naprawdę robi szyby do samochodów i na co patrzeć przy wyborze nowej szyby.',
+        'content': '''Przy wymianie szyby często pada pytanie: oryginał czy zamiennik? Odpowiedź jest prostsza, niż się wydaje. Wystarczy wiedzieć, kto naprawdę robi szyby do samochodów.
 
-## Kto produkuje szyby do aut
+## Kto produkuje szyby
 
-Producenci samochodów nie robią szyb sami. Zamawiają je u wyspecjalizowanych firm, takich jak **Saint-Gobain Sekurit, Pilkington, AGC Automotive czy Guardian**. Te same firmy produkują szyby na rynek części zamiennych – często na tych samych liniach produkcyjnych. Szyba z logo producenta auta i szyba „zamiennik” renomowanej marki mogą więc różnić się głównie nadrukiem i ceną.
+Producenci aut nie robią szyb sami. Zamawiają je w wyspecjalizowanych firmach, takich jak **Saint-Gobain Sekurit, Pilkington, AGC Automotive czy Guardian**. Te same firmy robią szyby na rynek części zamiennych, często na tych samych liniach. Szyba z logo marki auta i dobry zamiennik różnią się więc głównie nadrukiem i ceną.
 
 ## Na co zwrócić uwagę
 
-- **Wyposażenie szyby** – czujnik deszczu i zmierzchu, podgrzewanie, wyświetlacz HUD, szkło akustyczne czy przyciemnienie. Nowa szyba musi mieć dokładnie te same funkcje.
-- **Homologacja** – szyba dopuszczona do ruchu ma w rogu oznaczenie z literą „E” i numerem.
-- **Kamera asystentów jazdy** – w wielu nowszych autach za szybą pracuje kamera systemów bezpieczeństwa. Po wymianie szyby może być konieczna jej kalibracja.
+- **Wyposażenie szyby.** Czujnik deszczu i zmierzchu, podgrzewanie, wyświetlacz HUD, szkło wyciszające, przyciemnienie. Nowa szyba musi mieć dokładnie to samo.
+- **Homologacja.** Szyba dopuszczona do ruchu ma w rogu oznaczenie z literą „E” i numerem.
+- **Kamera za szybą.** W wielu nowszych autach za szybą pracuje kamera asystentów jazdy. Po wymianie szyby czasem trzeba ją skalibrować.
 
-## Jak dobrać właściwą szybę
+## Jak dobrać dobrą szybę
 
-Najpewniej po numerze VIN, który znajdziesz w dowodzie rejestracyjnym. Podaj go przy kontakcie, a dobierzemy szybę z dokładnie takim wyposażeniem, jakie ma Twoje auto. Pracujemy na szybach renomowanych producentów, tych samych, które trafiają do aut w fabryce.''',
+Najpewniej po numerze VIN z dowodu rejestracyjnego. Podaj go, kiedy dzwonisz, a dobierzemy szybę z takim samym wyposażeniem, jakie ma Twoje auto. Montujemy szyby tych samych producentów, którzy dostarczają je do fabryk.''',
     },
 ]
 

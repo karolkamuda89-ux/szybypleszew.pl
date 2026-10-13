@@ -44,7 +44,7 @@ class HomePageTests(TestCase):
     def test_home_shows_visee_promo_from_migration(self):
         response = self.client.get(reverse('core:home'))
         self.assertContains(response, 'id="nowosc"')
-        self.assertContains(response, 'Pióra wycieraczek VISEE z montażem od ręki')
+        self.assertContains(response, '<h2>Pióra wycieraczek VISEE</h2>')
 
 
 def make_image(name='zdjecie.jpg', size=(3000, 2000), fmt='JPEG'):

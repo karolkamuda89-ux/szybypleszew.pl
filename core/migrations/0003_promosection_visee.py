@@ -9,12 +9,9 @@ def create_visee(apps, schema_editor):
     PromoSection.objects.create(
         is_published=True,
         label='Nowość · pióra wycieraczek',
-        title='Pióra wycieraczek VISEE z montażem od ręki',
-        text='Nawiązaliśmy współpracę z VISEE – polskim producentem piór wycieraczek. '
-             'Dobierzemy pióra do Twojego auta i od razu je zamontujemy, także przy okazji wymiany szyby.',
-        bullets='Polska produkcja\n'
-                'Dobór do konkretnego modelu auta\n'
-                'Montaż na miejscu – odjeżdżasz z nowymi wycieraczkami',
+        title='Pióra wycieraczek VISEE',
+        text='Mamy w sprzedaży pióra polskiej firmy VISEE. Dobierzemy je do Twojego auta i od razu założymy, także przy okazji wymiany szyby.',
+        bullets='Polska produkcja\nPióra dobrane do modelu auta\nZakładamy od razu, na miejscu',
         button_text='Zapytaj o pióra',
         button_link='',
         image_alt='Pióra wycieraczek VISEE',
