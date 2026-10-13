@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{# Strona bledu 404 (nie ma takiej strony). Django uzywa jej automatycznie, gdy DEBUG=False (na serwerze). #}
+
+{% block title %}Nie znaleziono strony | {{ site_name }}{% endblock %}
+{% block description %}Nie ma takiej strony. Przejdź na stronę główną {{ site_name }} albo zadzwoń: {{ site_phone }}.{% endblock %}
+{# Strony bledu nie powinny trafiac do wynikow Google #}
+{% block robots %}<meta name="robots" content="noindex">{% endblock %}
+{% block body_class %}page-blog{% endblock %}
+
+{% block content %}
+<section class="page-hero not-found">
+    <div class="container">
+        <span class="eyebrow">Błąd 404</span>
+        <h1>Nie ma takiej strony</h1>
+        <p class="lead">Link mógł się zmienić albo strona została usunięta. Zacznij od strony głównej albo po prostu zadzwoń – pomożemy.</p>
+        <div class="hero-actions">
+            <a href="{% url 'core:home' %}" class="btn btn-cta btn-lg">Strona główna</a>
+            <a href="{{ site_phone_href }}" class="btn btn-ghost btn-lg not-found-call">Zadzwoń: {{ site_phone }}</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

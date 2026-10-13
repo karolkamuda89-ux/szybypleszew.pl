@@ -1,8 +1,8 @@
-{% load static %}
+{% load static l10n %}
 {% comment %}
   Szablon bazowy – wspolny dla wszystkich podstron (header z menu, stopka, przycisk "Zadzwon").
   Podstrony rozszerzaja go przez {% extends 'base.html' %} i wypelniaja bloki:
-  title, description, body_class, content (oraz opcjonalnie structured_data).
+  title, description, body_class, content (opcjonalnie: canonical, robots, og, structured_data, extra_head).
   Dane firmy ({{ site_phone }}, {{ site_address }} itd.) pochodza z core/context_processors.py.
 {% endcomment %}
 <!DOCTYPE html>
@@ -10,35 +10,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ site_name }} – sprzedaż i montaż szyb samochodowych{% endblock %}</title>
-    <meta name="description" content="{% block description %}{{ site_name }} – sprzedaż i montaż szyb samochodowych od {{ site_founded }} roku. Szyby do aut osobowych, dostawczych i ciężarowych, naprawa odprysków, dojazd do klienta w całej Wielkopolsce.{% endblock %}">
+    {# --- SEO: tytul i opis (to, co Google pokazuje w wynikach wyszukiwania) ---
+       Tytul do ok. 60 znakow, opis do ok. 155 znakow; podstrony nadpisuja oba bloki. #}
+    <title>{% block title %}Auto Szyby Pleszew – wymiana szyb samochodowych i naprawa odprysków{% endblock %}</title>
+    <meta name="description" content="{% block description %}Wymiana szyb samochodowych i naprawa odprysków w Pleszewie od {{ site_founded }} r. Auta osobowe, dostawcze i ciężarowe. Dojazd w całej Wielkopolsce. Tel. {{ site_phone }}{% endblock %}">
+    {# Adres kanoniczny: jeden "oficjalny" adres strony – chroni przed duplikatami (np. z parametrami w adresie) #}
+    <link rel="canonical" href="{% block canonical %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% endblock %}">
+    {% block robots %}{% endblock %}
+
+    {# --- Podglad linku przy udostepnianiu (Facebook, Messenger, WhatsApp – Open Graph) --- #}
+    {% block og %}
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ site_name }} – wymiana i naprawa szyb samochodowych">
+    <meta property="og:description" content="Szyby do aut osobowych, dostawczych i ciężarowych. Naprawa odprysków, dojazd do klienta w całej Wielkopolsce. Tel. {{ site_phone }}">
+    <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    {% endblock %}
+    <meta property="og:site_name" content="{{ site_name }}">
+    <meta property="og:locale" content="pl_PL">
+    <meta name="twitter:card" content="summary_large_image">
+
+    {# --- Ikonki: karta przegladarki, wyniki Google, ekran telefonu --- #}
+    <link rel="icon" href="{% static 'img/favicon/favicon.ico' %}" sizes="any">
+    <link rel="icon" href="{% static 'img/favicon/favicon-32.png' %}" type="image/png" sizes="32x32">
+    <link rel="apple-touch-icon" href="{% static 'img/favicon/apple-touch-icon.png' %}">
+    <meta name="theme-color" content="#1d2127">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,800;1,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    {# Dane strukturalne dla Google (schema.org): nazwa, adres, telefon, godziny – pomagaja w wynikach wyszukiwania i Mapach #}
+
+    {# Dane strukturalne dla Google (schema.org): firma, adres, telefon, godziny, polozenie na mapie,
+       profile w sieci – pomagaja w wynikach lokalnych ("szyby samochodowe Pleszew") i w Mapach Google #}
     {% block structured_data %}
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "AutoRepair",
+        "@id": "{{ request.scheme }}://{{ request.get_host }}/#firma",
         "name": "{{ site_name }}",
         "legalName": "{{ site_company }}",
-        "description": "Sprzedaż i montaż szyb samochodowych, naprawa odprysków, dojazd do klienta w całej Wielkopolsce.",
+        "description": "Sprzedaż i montaż szyb samochodowych, naprawa odprysków, przeszklenia busów, pióra wycieraczek VISEE. Dojazd do klienta w całej Wielkopolsce.",
         "url": "{{ request.scheme }}://{{ request.get_host }}/",
         "logo": "{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo/logo-autoszyby.png' %}",
+        "image": "{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}",
         "telephone": "{{ site_phone_e164 }}",
         "email": "{{ site_email }}",
         "foundingDate": "{{ site_founded }}",
-        "taxID": "{{ site_nip }}",
+        "taxID": "{{ site_nip|cut:' ' }}",
         "address": {
             "@type": "PostalAddress",
             "streetAddress": "{{ site_street }}",
             "postalCode": "{{ site_postcode }}",
             "addressLocality": "{{ site_city }}",
+            "addressRegion": "wielkopolskie",
             "addressCountry": "PL"
         },
-        "areaServed": "Wielkopolska",
+        {# unlocalize: wspolrzedne z kropka (51.88), a nie z polskim przecinkiem – inaczej JSON jest bledny #}
+        "geo": {"@type": "GeoCoordinates", "latitude": {{ site_latitude|unlocalize }}, "longitude": {{ site_longitude|unlocalize }}},
+        "hasMap": "{{ site_google_maps }}",
+        "areaServed": [{"@type": "City", "name": "Pleszew"}, {"@type": "State", "name": "Wielkopolska"}],
+        "sameAs": ["{{ site_facebook }}", "{{ site_google_maps }}"],
         "openingHoursSpecification": [
             {"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], "opens": "08:00", "closes": "17:00"},
             {"@type": "OpeningHoursSpecification", "dayOfWeek": "Saturday", "opens": "08:00", "closes": "14:00"}
@@ -46,7 +81,7 @@
     }
     </script>
     {% endblock %}
-    {# Dodatkowe znaczniki w <head> dla konkretnej podstrony (np. dane wpisu na blogu dla Google i Facebooka) #}
+    {# Dodatkowe znaczniki w <head> dla konkretnej podstrony (np. dane wpisu na blogu dla Google) #}
     {% block extra_head %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}">

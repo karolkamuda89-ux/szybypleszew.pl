@@ -5,8 +5,10 @@
   Pojedynczy wpis ma osobny szablon: core/blog_post.html.
 {% endcomment %}
 
-{% block title %}Blog – {{ site_name }}{% endblock %}
-{% block description %}Porady o szybach samochodowych – blog {{ site_name }}.{% endblock %}
+{% block title %}Blog – porady o szybach samochodowych | {{ site_name }}{% endblock %}
+{% block description %}Porady o szybach samochodowych: kiedy naprawić odprysk, jak dbać o szyby zimą i jak wybrać nową szybę. Blog firmy {{ site_name }}.{% endblock %}
+{# Kolejne strony listy (?strona=2) maja wlasny adres kanoniczny #}
+{% block canonical %}{{ request.scheme }}://{{ request.get_host }}{{ request.path }}{% if page.number > 1 %}?strona={{ page.number }}{% endif %}{% endblock %}
 {% block body_class %}page-blog{% endblock %}
 
 {% block content %}

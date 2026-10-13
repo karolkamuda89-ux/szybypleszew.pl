@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # Mapa strony /sitemap.xml dla Google (core/sitemaps.py)
+    'django.contrib.sitemaps',
     # Strona firmowa (widoki, szablony, opinie Google)
     'core',
 ]
@@ -162,6 +164,9 @@ SITE_POSTCODE = '63-300'
 SITE_CITY = 'Pleszew'
 SITE_HOURS_WEEKDAYS = 'pon.–pt. 8:00–17:00'
 SITE_HOURS_SATURDAY = 'sob. 8:00–14:00'
+# Wspolrzedne firmy (z Map Google) – dla danych strukturalnych, pomagaja w wynikach lokalnych
+SITE_LATITUDE = 51.8855711
+SITE_LONGITUDE = 17.7819279
 # Media spolecznosciowe w stopce (puste = ikona sie nie wyswietla)
 SITE_FACEBOOK = 'https://www.facebook.com/szybypleszew'
 # Autor strony – podpis w stopce

@@ -861,6 +861,9 @@ img { max-width: 100%; display: block; }
 .page-hero .lead { max-width: 640px; color: var(--graphite-300); }
 .page-hero .eyebrow { background: rgba(168, 240, 0, .12); color: var(--lime-400); }
 .page-blog .section { padding-top: 56px; }
+/* Strona 404 */
+.not-found { padding: 96px 0 110px; }
+.not-found .not-found-call { color: #fff; border-color: rgba(255, 255, 255, .25); }
 
 .posts {
     display: grid;

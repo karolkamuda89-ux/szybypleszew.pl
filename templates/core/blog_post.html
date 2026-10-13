@@ -1,35 +1,56 @@
 {% extends 'base.html' %}
-{% load blog_tags %}
+{% load static blog_tags %}
 {% comment %}
   Pojedynczy wpis na blogu (adres /blog/<slug>/). Tresc pochodzi z panelu admina
   i jest zamieniana na HTML filtrem render_post (core/templatetags/blog_tags.py).
 {% endcomment %}
 
-{% block title %}{{ post.title }} – {{ site_name }}{% endblock %}
+{% block title %}{{ post.title }} | {{ site_name }}{% endblock %}
 {% block description %}{{ post.excerpt }}{% endblock %}
 {% block body_class %}page-blog page-post{% endblock %}
 
-{% block extra_head %}
-{# Podglad linku przy udostepnianiu na Facebooku/Messengerze (Open Graph) #}
+{# Podglad linku przy udostepnianiu wpisu (Open Graph) – zastepuje domyslny z base.html #}
+{% block og %}
 <meta property="og:type" content="article">
 <meta property="og:title" content="{{ post.title }}">
 <meta property="og:description" content="{{ post.excerpt }}">
-<meta property="og:url" content="{{ request.build_absolute_uri }}">
-{% if post.cover %}<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.cover.url }}">{% endif %}
-{# Dane wpisu dla Google (schema.org BlogPosting) #}
+<meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+{% if post.cover %}
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.cover.url }}">
+{% else %}
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-image.jpg' %}">
+{% endif %}
+<meta property="article:published_time" content="{{ post.published_at|date:'c' }}">
+<meta property="article:modified_time" content="{{ post.updated_at|date:'c' }}">
+{% endblock %}
+
+{% block extra_head %}
+{# Dane wpisu dla Google: artykul (BlogPosting) + sciezka nawigacji (BreadcrumbList) #}
 <script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "headline": "{{ post.title|escapejs }}",
-    "description": "{{ post.excerpt|escapejs }}",
-    "datePublished": "{{ post.published_at|date:'c' }}",
-    "dateModified": "{{ post.updated_at|date:'c' }}",
-    {% if post.cover %}"image": "{{ request.scheme }}://{{ request.get_host }}{{ post.cover.url }}",{% endif %}
-    "author": {"@type": "Organization", "name": "{{ site_name }}"},
-    "publisher": {"@type": "Organization", "name": "{{ site_name }}"},
-    "mainEntityOfPage": "{{ request.build_absolute_uri }}"
-}
+[
+    {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": "{{ post.title|escapejs }}",
+        "description": "{{ post.excerpt|escapejs }}",
+        "datePublished": "{{ post.published_at|date:'c' }}",
+        "dateModified": "{{ post.updated_at|date:'c' }}",
+        {% if post.cover %}"image": "{{ request.scheme }}://{{ request.get_host }}{{ post.cover.url }}",{% endif %}
+        "author": {"@type": "Organization", "name": "{{ site_name }}", "url": "{{ request.scheme }}://{{ request.get_host }}/"},
+        "publisher": {"@id": "{{ request.scheme }}://{{ request.get_host }}/#firma"},
+        "mainEntityOfPage": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}",
+        "inLanguage": "pl-PL"
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Strona główna", "item": "{{ request.scheme }}://{{ request.get_host }}/"},
+            {"@type": "ListItem", "position": 2, "name": "Blog", "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'core:blog' %}"},
+            {"@type": "ListItem", "position": 3, "name": "{{ post.title|escapejs }}"}
+        ]
+    }
+]
 </script>
 {% endblock %}
 

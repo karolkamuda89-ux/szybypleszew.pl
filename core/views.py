@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import Prefetch
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
@@ -107,3 +107,14 @@ def blog_post(request, slug):
 def privacy(request):
     """Polityka prywatnosci (tresc w szablonie core/privacy.html)."""
     return render(request, 'core/privacy.html')
+
+
+def robots_txt(request):
+    """/robots.txt – wszystko dla wyszukiwarek oprocz panelu admina, plus adres mapy strony."""
+    lines = [
+        'User-agent: *',
+        'Disallow: /admin/',
+        '',
+        f'Sitemap: {request.build_absolute_uri("/sitemap.xml")}',
+    ]
+    return HttpResponse('\n'.join(lines) + '\n', content_type='text/plain; charset=utf-8')

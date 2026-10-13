@@ -291,6 +291,65 @@ class FooterAndPrivacyTests(TestCase):
         self.assertContains(response, 'P.H.U. AUTO MAKSYM Joanna Płukarz')
 
 
+class SeoTests(TestCase):
+    """SEO: mapa strony, robots.txt, tytuly i opisy, adres kanoniczny, Open Graph, dane strukturalne, 404."""
+
+    def test_sitemap_lists_pages_and_only_live_posts(self):
+        from datetime import timedelta
+        from django.utils import timezone
+        from .models import Post
+        Post.objects.create(title='Szkic SEO', excerpt='x', content='x', is_published=False)
+        Post.objects.create(title='Przyszly SEO', excerpt='x', content='x', published_at=timezone.now() + timedelta(days=5))
+        response = self.client.get('/sitemap.xml')
+        self.assertEqual(response.status_code, 200)
+        xml = response.content.decode()
+        self.assertIn('<loc>http://testserver/</loc>', xml)
+        self.assertIn('/blog/odprysk-na-szybie-naprawic-czy-wymienic/', xml)  # wpis z migracji startowej
+        self.assertIn('/polityka-prywatnosci/', xml)
+        self.assertNotIn('szkic-seo', xml)
+        self.assertNotIn('przyszly-seo', xml)
+
+    def test_robots_txt(self):
+        response = self.client.get('/robots.txt')
+        self.assertEqual(response['Content-Type'], 'text/plain; charset=utf-8')
+        self.assertContains(response, 'Disallow: /admin/')
+        self.assertContains(response, 'Sitemap: http://testserver/sitemap.xml')
+
+    def test_home_meta_tags(self):
+        response = self.client.get(reverse('core:home') + '?utm_source=facebook')
+        self.assertContains(response, '<title>Auto Szyby Pleszew – wymiana szyb samochodowych i naprawa odprysków</title>')
+        self.assertContains(response, '<link rel="canonical" href="http://testserver/">')  # bez parametrow z adresu
+        self.assertContains(response, 'property="og:image" content="http://testserver/static/img/og-image.jpg"')
+        self.assertContains(response, '"geo": {"@type": "GeoCoordinates"')
+        self.assertContains(response, 'w Pleszewie</span></h1>')
+
+    def test_structured_data_is_valid_json(self):
+        import json
+        import re
+        for url in [reverse('core:home'), '/blog/odprysk-na-szybie-naprawic-czy-wymienic/']:
+            html = self.client.get(url).content.decode()
+            blocks = re.findall(r'<script type="application/ld[+]json">(.*?)</script>', html, re.S)
+            self.assertTrue(blocks, url)
+            for block in blocks:
+                json.loads(block)  # rzuci wyjatek przy blednym JSON-ie
+
+    def test_post_has_article_meta_and_breadcrumbs(self):
+        response = self.client.get('/blog/odprysk-na-szybie-naprawic-czy-wymienic/')
+        self.assertContains(response, '<meta property="og:type" content="article">')
+        self.assertContains(response, '"@type": "BreadcrumbList"')
+        self.assertContains(response, '| Auto Szyby Pleszew</title>')
+
+    def test_favicon_redirect(self):
+        response = self.client.get('/favicon.ico')
+        self.assertRedirects(response, '/static/img/favicon/favicon.ico', status_code=301, fetch_redirect_response=False)
+
+    def test_404_page_is_styled_and_noindex(self):
+        response = self.client.get('/nie-ma-takiej-strony/')
+        self.assertEqual(response.status_code, 404)
+        self.assertContains(response, 'Nie ma takiej strony', status_code=404)
+        self.assertContains(response, '<meta name="robots" content="noindex">', status_code=404)
+
+
 class BlogTests(TestCase):
     """Blog: lista, pojedynczy wpis, szkice/planowanie, formatowanie tresci i panel."""
 

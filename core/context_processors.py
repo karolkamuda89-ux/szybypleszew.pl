@@ -34,6 +34,8 @@ def site_info(request):
         'site_hours_weekdays': settings.SITE_HOURS_WEEKDAYS,
         'site_hours_saturday': settings.SITE_HOURS_SATURDAY,
         'site_facebook': settings.SITE_FACEBOOK,
+        'site_latitude': settings.SITE_LATITUDE,
+        'site_longitude': settings.SITE_LONGITUDE,
         'site_author': settings.SITE_AUTHOR,
         # Link do wizytowki Google – ikona w stopce
         'site_google_maps': settings.GOOGLE_REVIEWS_URL,
