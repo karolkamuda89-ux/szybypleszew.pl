@@ -132,6 +132,54 @@ class GalleryTests(TestCase):
         self.assertEqual(self.client.get(f'/admin/core/galleryitem/{item.pk}/change/').status_code, 200)
 
 
+class GalleryDeleteTests(TestCase):
+    """Usuwanie w panelu: realizacja (pojedynczo i zbiorczo) znika razem z plikami zdjec."""
+
+    def setUp(self):
+        import tempfile
+        from django.contrib.auth.models import User
+        self.media = tempfile.mkdtemp()
+        self.override = override_settings(MEDIA_ROOT=self.media)
+        self.override.enable()
+        self.client.force_login(User.objects.create_superuser('admin', 'admin@example.com', 'haslo-testowe'))
+
+    def tearDown(self):
+        import shutil
+        self.override.disable()
+        shutil.rmtree(self.media, ignore_errors=True)
+
+    def _item_with_photo(self, title):
+        from .models import GalleryItem, GalleryPhoto
+        item = GalleryItem.objects.create(title=title)
+        photo = GalleryPhoto.objects.create(item=item, image=make_image())
+        return item, [photo.image.path, photo.thumbnail.path]
+
+    def test_list_has_delete_button(self):
+        item, _ = self._item_with_photo('Do usunięcia')
+        response = self.client.get('/admin/core/galleryitem/')
+        self.assertContains(response, f'/admin/core/galleryitem/{item.pk}/delete/')
+
+    def test_delete_single_item_removes_photo_files(self):
+        import os
+        from .models import GalleryItem
+        item, paths = self._item_with_photo('Pojedyncza')
+        response = self.client.post(f'/admin/core/galleryitem/{item.pk}/delete/', {'post': 'yes'})
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(GalleryItem.objects.filter(pk=item.pk).exists())
+        self.assertFalse(any(os.path.exists(p) for p in paths))
+
+    def test_bulk_delete_action(self):
+        import os
+        from .models import GalleryItem
+        a, paths_a = self._item_with_photo('A')
+        b, paths_b = self._item_with_photo('B')
+        response = self.client.post('/admin/core/galleryitem/', {
+            'action': 'delete_selected', '_selected_action': [a.pk, b.pk], 'post': 'yes'})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(GalleryItem.objects.count(), 0)
+        self.assertFalse(any(os.path.exists(p) for p in paths_a + paths_b))
+
+
 class BlogPageTests(TestCase):
     """Podstrona bloga."""
 

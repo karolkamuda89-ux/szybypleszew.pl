@@ -2,6 +2,7 @@
 from django import forms
 from django.contrib import admin
 from django.db.models import Max
+from django.urls import reverse
 from django.utils.html import format_html
 
 from .models import GalleryItem, GalleryPhoto
@@ -51,6 +52,8 @@ class GalleryPhotoInline(admin.TabularInline):
     """Zdjecia realizacji edytowane w tabelce pod formularzem realizacji."""
     model = GalleryPhoto
     extra = 0
+    # Kolumna "Usunąć?" przy kazdym zdjeciu – zaznacz i zapisz, zeby usunac zdjecie (wraz z plikiem)
+    can_delete = True
     fields = ['podglad', 'image', 'caption', 'order']
     readonly_fields = ['podglad']
 
@@ -63,7 +66,7 @@ class GalleryPhotoInline(admin.TabularInline):
 class GalleryItemAdmin(admin.ModelAdmin):
     form = GalleryItemForm
     inlines = [GalleryPhotoInline]
-    list_display = ['okladka', 'title', 'shape', 'liczba_zdjec', 'order', 'is_published']
+    list_display = ['okladka', 'title', 'shape', 'liczba_zdjec', 'order', 'is_published', 'usun']
     list_display_links = ['okladka', 'title']
     # Kolejnosc i widocznosc mozna zmieniac od razu na liscie, bez wchodzenia w realizacje
     list_editable = ['order', 'is_published']
@@ -86,6 +89,13 @@ class GalleryItemAdmin(admin.ModelAdmin):
     @admin.display(description='Zdjęć')
     def liczba_zdjec(self, obj):
         return len(obj.photos.all())
+
+    @admin.display(description='')
+    def usun(self, obj):
+        # Przycisk prowadzi do strony potwierdzenia Django ("Czy na pewno?") – nic nie znika od razu.
+        # Usuniecie realizacji kasuje tez jej zdjecia razem z plikami w media/.
+        url = reverse('admin:core_galleryitem_delete', args=[obj.pk])
+        return format_html('<a href="{}" class="deletelink" style="white-space:nowrap">Usuń</a>', url)
 
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
