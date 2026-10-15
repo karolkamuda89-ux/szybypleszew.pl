@@ -7,12 +7,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.sitemaps.views import sitemap
-from django.templatetags.static import static as static_url
 from django.urls import include, path
-from django.views.generic import RedirectView
 
 from core.sitemaps import sitemaps
-from core.views import robots_txt
+from core.views import favicon, robots_txt
 
 urlpatterns = [
     # Panel administracyjny Django (logowanie kontem superuzytkownika)
@@ -21,7 +19,7 @@ urlpatterns = [
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='sitemap'),
     path('robots.txt', robots_txt, name='robots'),
     # Przegladarki same pytaja o /favicon.ico – przekierowujemy do ikonki w static/
-    path('favicon.ico', RedirectView.as_view(url=static_url('img/favicon/favicon.ico'), permanent=True)),
+    path('favicon.ico', favicon),
     # Strona firmowa – adresy zdefiniowane w core/urls.py
     path('', include('core.urls')),
 ]

@@ -13,6 +13,7 @@ from django.core.paginator import Paginator
 from django.db.models import Prefetch
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.templatetags.static import static
 from django.utils import timezone
 
 from .forms import ContactForm
@@ -118,3 +119,9 @@ def robots_txt(request):
         f'Sitemap: {request.build_absolute_uri("/sitemap.xml")}',
     ]
     return HttpResponse('\n'.join(lines) + '\n', content_type='text/plain; charset=utf-8')
+
+
+def favicon(request):
+    """/favicon.ico -> ikonka w static/. Adres liczony przy zadaniu, a nie przy starcie aplikacji:
+    na serwerze pliki statyczne maja numer wersji w nazwie, ktory jest znany dopiero po collectstatic."""
+    return redirect(static('img/favicon/favicon.ico'), permanent=True)
