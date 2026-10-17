@@ -5,9 +5,11 @@ przez context processor `core.context_processors.site_info`, wiec widoki przekaz
 tylko to, co jest potrzebne na konkretnej stronie.
 """
 import logging
+import time
 
 from django.conf import settings
 from django.contrib import messages
+from django.core.cache import cache
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.db.models import Prefetch
@@ -47,12 +49,41 @@ def notify_by_email(msg):
         return False
 
 
+# Limit wysylek formularza z jednego adresu IP
+RATE_LIMIT_COUNT = 3
+RATE_LIMIT_SECONDS = 10 * 60
+
+
+def client_ip(request):
+    """Adres IP odwiedzajacego. Na serwerze strona stoi za nginx, ktory dopisuje prawdziwy adres
+    na KONCU naglowka X-Forwarded-For (wczesniejsze wpisy moze podrobic sam odwiedzajacy)."""
+    forwarded = request.META.get('HTTP_X_FORWARDED_FOR', '')
+    if forwarded:
+        return forwarded.split(',')[-1].strip()
+    return request.META.get('REMOTE_ADDR', '')
+
+
+def rate_limited(request):
+    """True, gdy z tego adresu wyslano juz RATE_LIMIT_COUNT wiadomosci w ostatnich RATE_LIMIT_SECONDS.
+    Przy False zapisuje kolejna wysylke. Pamiec podreczna jest wspolna dla procesow strony (settings.CACHES)."""
+    key = f'kontakt-ip:{client_ip(request)}'
+    now = time.time()
+    recent = [t for t in cache.get(key, []) if t > now - RATE_LIMIT_SECONDS]
+    if len(recent) >= RATE_LIMIT_COUNT:
+        return True
+    cache.set(key, recent + [now], RATE_LIMIT_SECONDS)
+    return False
+
+
 def home(request):
     """Strona glowna: opinie Google, galeria (z panelu), sekcja "Nowość" i formularz kontaktowy."""
     if request.method == 'POST':
         form = ContactForm(request.POST)
-        if form.is_valid():
-            # Boty wypelniajace ukryte pole dostaja ten sam komunikat, ale nic nie zapisujemy
+        if form.is_valid() and rate_limited(request):
+            form.add_error(None, 'Z tego urządzenia wysłano już kilka wiadomości w krótkim czasie. '
+                                 f'Spróbuj ponownie za kilka minut albo po prostu zadzwoń: {settings.SITE_PHONE}.')
+        elif form.is_valid():
+            # Boty (pulapka albo zbyt szybka wysylka) dostaja ten sam komunikat, ale nic nie zapisujemy
             if not form.is_spam():
                 msg = form.save()
                 msg.email_sent = notify_by_email(msg)

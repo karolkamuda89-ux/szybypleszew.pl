@@ -252,6 +252,17 @@ GOOGLE_REVIEWS_URL = 'https://maps.app.goo.gl/vNggiK4uxwEbUxC67'
 # Wartosci pokazywane, gdy brak klucza API lub Google nie odpowiada (aktualizowac recznie)
 GOOGLE_RATING_FALLBACK = 4.8
 GOOGLE_RATING_COUNT_FALLBACK = 251
+# Pamiec podreczna (opinie Google, limit wysylek formularza): pliki na dysku, wspolne dla wszystkich
+# procesow strony na serwerze. W testach pamiec w procesie, zeby testy nie zostawialy plikow.
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': BASE_DIR / '.cache',
+    }
+}
+if 'test' in sys.argv:
+    CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}}
+
 # Jak dlugo trzymac pobrane opinie w pamieci, zanim zapytamy Google ponownie (12 godzin)
 GOOGLE_REVIEWS_CACHE_SECONDS = 12 * 60 * 60
 

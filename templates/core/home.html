@@ -287,6 +287,8 @@
                 </div>
                 {% include 'core/_field.html' with field=contact_form.message %}
 
+                {# Znacznik czasu otwarcia formularza (ochrona przed botami, patrz core/forms.py) #}
+                <input type="hidden" name="started" value="{{ contact_form.started_token }}">
                 {# Pulapka na boty – pole niewidoczne dla ludzi (patrz ContactForm.website) #}
                 <div class="form-hp" aria-hidden="true">
                     <label for="{{ contact_form.website.id_for_label }}">Nie wypełniaj tego pola</label>

@@ -13,3 +13,4 @@ media/*
 .vscode/
 *.log
 .claude/
+.cache/

@@ -1,7 +1,27 @@
-"""Formularze strony: formularz kontaktowy w sekcji "Kontakt"."""
+"""Formularze strony: formularz kontaktowy w sekcji "Kontakt".
+
+Ochrona przed spamem (bez irytujacych dla ludzi zagadek typu CAPTCHA):
+  1. pulapka (honeypot) – ukryte pole "website", ktore wypelniaja tylko boty,
+  2. znacznik czasu – formularz wyslany szybciej niz MIN_SECONDS od otwarcia strony to bot,
+     a znacznik jest podpisany kluczem strony, wiec nie da sie go podrobic,
+  3. limit wysylek z jednego adresu IP – w widoku (core/views.py).
+Boty z punktow 1–2 dostaja komunikat "wyslano", ale nic sie nie zapisuje (nie wiedza, ze wpadly).
+"""
+import time
+
 from django import forms
+from django.core import signing
 
 from .models import ContactMessage
+
+TOKEN_SALT = 'formularz-kontaktowy'
+MIN_SECONDS = 3            # czlowiek nie wypelni formularza szybciej
+MAX_AGE = 4 * 60 * 60      # znacznik wazny 4 godziny (dluzej otwarta karta -> prosba o odswiezenie)
+
+
+def make_started_token(timestamp=None):
+    """Podpisany znacznik czasu otwarcia formularza (ukryte pole "started")."""
+    return signing.dumps(timestamp if timestamp is not None else time.time(), salt=TOKEN_SALT)
 
 
 class ContactForm(forms.ModelForm):
@@ -44,5 +64,35 @@ class ContactForm(forms.ModelForm):
             raise forms.ValidationError('Numer telefonu powinien mieć co najmniej 9 cyfr.')
         return phone
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.is_bot = False
+
+    @property
+    def started_token(self):
+        """Swiezy znacznik do szablonu – takze przy ponownym wyswietleniu formularza z bledami."""
+        return make_started_token()
+
+    def clean(self):
+        cleaned = super().clean()
+        token = self.data.get('started', '')
+        expired_msg = 'Formularz był otwarty bardzo długo. Sprawdź dane i kliknij „Wyślij” jeszcze raz.'
+        try:
+            started = float(signing.loads(token, salt=TOKEN_SALT, max_age=MAX_AGE))
+        except signing.SignatureExpired:
+            # Ktos zostawil otwarta karte na kilka godzin – to czlowiek, prosimy o ponowne wyslanie
+            raise forms.ValidationError(expired_msg)
+        except (signing.BadSignature, TypeError, ValueError):
+            # Brak albo podrobiony znacznik: wysylka z pominieciem strony – bot
+            self.is_bot = True
+            return cleaned
+        # Sprawdzamy tez czas zapisany w znaczniku (nie tylko wiek podpisu)
+        elapsed = time.time() - started
+        if elapsed > MAX_AGE:
+            raise forms.ValidationError(expired_msg)
+        if elapsed < MIN_SECONDS:
+            self.is_bot = True
+        return cleaned
+
     def is_spam(self):
-        return bool(self.cleaned_data.get('website'))
+        return self.is_bot or bool(self.cleaned_data.get('website'))

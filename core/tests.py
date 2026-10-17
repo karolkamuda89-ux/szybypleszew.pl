@@ -221,8 +221,15 @@ class PromoSectionTests(TestCase):
 class ContactFormTests(TestCase):
     """Formularz kontaktowy: zapis wiadomosci, e-mail, bledy, ochrona przed spamem i panel."""
 
-    VALID = {'name': 'Jan', 'phone': '600 100 200', 'email': 'jan@example.com',
-             'car': 'Skoda Octavia 2018', 'message': 'Pęknięta szyba czołowa', 'consent': 'on', 'website': ''}
+    def setUp(self):
+        import time
+        from django.core.cache import cache
+        from .forms import make_started_token
+        cache.clear()  # limit wysylek z poprzedniego testu nie moze blokowac kolejnego
+        # Formularz "otwarty" 10 sekund temu – jak u czlowieka
+        self.VALID = {'name': 'Jan', 'phone': '600 100 200', 'email': 'jan@example.com',
+                      'car': 'Skoda Octavia 2018', 'message': 'Pęknięta szyba czołowa', 'consent': 'on',
+                      'website': '', 'started': make_started_token(time.time() - 10)}
 
     def test_valid_message_is_saved_and_emailed(self):
         from django.core import mail
@@ -255,6 +262,50 @@ class ContactFormTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertFalse(ContactMessage.objects.exists())
         self.assertEqual(len(mail.outbox), 0)
+
+    def test_too_fast_submission_is_treated_as_bot(self):
+        import time
+        from .forms import make_started_token
+        from .models import ContactMessage
+        data = dict(self.VALID, started=make_started_token(time.time() - 1))  # 1 s – za szybko na czlowieka
+        response = self.client.post(reverse('core:home'), data)
+        self.assertEqual(response.status_code, 302)        # bot widzi "wyslano"...
+        self.assertFalse(ContactMessage.objects.exists())   # ...ale nic sie nie zapisuje
+
+    def test_missing_or_forged_token_is_treated_as_bot(self):
+        from .models import ContactMessage
+        for token in ['', 'podrobiony:znacznik']:
+            self.client.post(reverse('core:home'), dict(self.VALID, started=token))
+        self.assertFalse(ContactMessage.objects.exists())
+
+    def test_expired_token_asks_to_resend_and_keeps_data(self):
+        import time
+        from .forms import MAX_AGE, make_started_token
+        from .models import ContactMessage
+        data = dict(self.VALID, started=make_started_token(time.time() - MAX_AGE - 60))
+        response = self.client.post(reverse('core:home'), data)
+        self.assertContains(response, 'Formularz był otwarty bardzo długo')
+        self.assertContains(response, 'value="Skoda Octavia 2018"')  # wpisane dane nie przepadaja
+        self.assertFalse(ContactMessage.objects.exists())
+
+    def test_rate_limit_per_ip(self):
+        from .models import ContactMessage
+        from .views import RATE_LIMIT_COUNT
+        for _ in range(RATE_LIMIT_COUNT):
+            self.client.post(reverse('core:home'), self.VALID, REMOTE_ADDR='10.0.0.1')
+        response = self.client.post(reverse('core:home'), self.VALID, REMOTE_ADDR='10.0.0.1')
+        self.assertContains(response, 'wysłano już kilka wiadomości')
+        self.assertEqual(ContactMessage.objects.count(), RATE_LIMIT_COUNT)
+        # inny adres IP nie jest blokowany
+        self.client.post(reverse('core:home'), self.VALID, REMOTE_ADDR='10.0.0.2')
+        self.assertEqual(ContactMessage.objects.count(), RATE_LIMIT_COUNT + 1)
+
+    def test_client_ip_uses_last_forwarded_address(self):
+        from django.test import RequestFactory
+        from .views import client_ip
+        # odwiedzajacy podrobil pierwszy wpis, nginx dopisal prawdziwy adres na koncu
+        request = RequestFactory().get('/', HTTP_X_FORWARDED_FOR='1.2.3.4, 83.10.20.30')
+        self.assertEqual(client_ip(request), '83.10.20.30')
 
     def test_failed_email_still_saves_message(self):
         from .models import ContactMessage
