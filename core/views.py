@@ -10,7 +10,7 @@ import time
 from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 from django.db.models import Prefetch
 from django.http import Http404, HttpResponse
@@ -37,12 +37,14 @@ def notify_by_email(msg):
         f'{msg.message or "(bez treści)"}\n'
     )
     try:
-        send_mail(
+        EmailMessage(
             subject=f'Formularz: {msg.name}, tel. {msg.phone}',
-            message=body,
+            body=body + '\nWszystkie wiadomości: panel strony → „Wiadomości z formularza”.\n',
             from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=settings.CONTACT_RECIPIENTS,
-        )
+            to=settings.CONTACT_RECIPIENTS,
+            # "Odpowiedz" w poczcie trafia od razu do klienta (gdy podal e-mail), a nie na konto wysylajace
+            reply_to=[msg.email] if msg.email else None,
+        ).send()
         return True
     except Exception as exc:  # np. zle haslo do skrzynki – wiadomosc i tak jest w bazie
         logger.error('Nie udalo sie wyslac powiadomienia e-mail: %s', exc)

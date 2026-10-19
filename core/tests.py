@@ -242,6 +242,7 @@ class ContactFormTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn('600 100 200', mail.outbox[0].body)
         self.assertEqual(mail.outbox[0].to, ['szybypleszew@interia.pl'])
+        self.assertEqual(mail.outbox[0].reply_to, ['jan@example.com'])  # "Odpowiedz" -> klient
         # komunikat o wyslaniu po przekierowaniu
         self.assertContains(self.client.get(reverse('core:home')), 'Wiadomość została wysłana')
 
@@ -309,7 +310,7 @@ class ContactFormTests(TestCase):
 
     def test_failed_email_still_saves_message(self):
         from .models import ContactMessage
-        with mock.patch('core.views.send_mail', side_effect=OSError('SMTP down')):
+        with mock.patch('core.views.EmailMessage.send', side_effect=OSError('SMTP down')):
             self.client.post(reverse('core:home'), self.VALID)
         msg = ContactMessage.objects.get()
         self.assertFalse(msg.email_sent)
