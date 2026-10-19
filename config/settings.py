@@ -278,7 +278,10 @@ if EMAIL_HOST:
     EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '465'))
     EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
     EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-    EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'True') == 'True'   # port 465 = SSL
+    # Port 465 = SSL, port 587 = STARTTLS (EMAIL_USE_TLS=True). Hetzner blokuje wychodzacy port 465,
+    # wiec na serwerze uzywamy 587 + STARTTLS.
+    EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'False') == 'True'
+    EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False' if EMAIL_USE_TLS else 'True') == 'True'
     EMAIL_TIMEOUT = 10
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
