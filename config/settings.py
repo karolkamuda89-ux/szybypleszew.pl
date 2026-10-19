@@ -286,5 +286,6 @@ if EMAIL_HOST:
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER if EMAIL_HOST else 'strona@szybypleszew.pl')
-# Na te adresy przychodza powiadomienia o nowych wiadomosciach z formularza
-CONTACT_RECIPIENTS = [SITE_EMAIL]
+# Na te adresy przychodza powiadomienia o nowych wiadomosciach z formularza.
+# Na serwerze mozna podac kilka adresow po przecinku: CONTACT_RECIPIENTS=adres1@...,adres2@...
+CONTACT_RECIPIENTS = [a.strip() for a in os.environ.get('CONTACT_RECIPIENTS', SITE_EMAIL).split(',') if a.strip()]
